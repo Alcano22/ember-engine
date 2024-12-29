@@ -3,7 +3,7 @@ package org.emberstudios.renderer.opengl
 import org.emberstudios.renderer.IndexBuffer
 import org.lwjgl.opengl.GL15.*
 
-internal class OpenGLIndexBuffer(indices: IntArray) : IndexBuffer {
+internal class GLIndexBuffer(indices: IntArray) : IndexBuffer {
 
 	private val id = glGenBuffers()
 

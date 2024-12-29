@@ -1,21 +1,63 @@
 package org.emberstudios.renderer.opengl
 
+import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.core.math.toArray
 import org.emberstudios.renderer.Shader
 import org.joml.*
 import org.lwjgl.opengl.GL20.*
+import java.io.File
 
-internal class OpenGLShader(
-	private val vertexSrc: String,
-	private val fragmentSrc: String
-) : Shader {
+internal class GLShader : Shader {
 
 	companion object {
-		val LOGGER = getLogger<OpenGLShader>()
+		const val TYPE_PREFIX = "#type"
+
+		val LOGGER = getLogger<GLShader>()
 	}
 
 	private var programID = 0
+
+	private val filepath: String
+	private var vertexSrc = ""
+	private var fragmentSrc = ""
+
+	constructor(vertexSrc: String, fragmentSrc: String) {
+		this.vertexSrc = vertexSrc
+		this.fragmentSrc = fragmentSrc
+		filepath = "undefined"
+	}
+
+	constructor(filepath: String) {
+		this.filepath = filepath
+
+		val file = File(filepath)
+		if (!file.exists())
+			LOGGER.exitError { "File not found: '$filepath'" }
+
+		val src = file.readText()
+		val splitSrc = src.split(Regex("($TYPE_PREFIX)( )+([a-zA-Z]+)"))
+
+		var index = src.indexOf(TYPE_PREFIX) + 6
+		var eol = src.indexOf("\r\n", index)
+		val firstPattern = src.substring(index, eol).trim()
+
+		index = src.indexOf(TYPE_PREFIX, eol) + 6
+		eol = src.indexOf("\r\n", index)
+		val secondPattern = src.substring(index, eol).trim()
+
+		when (firstPattern) {
+			"vertex" -> vertexSrc = splitSrc[1]
+			"fragment" -> fragmentSrc = splitSrc[1]
+			else -> LOGGER.exitError { "Unexpected token '$firstPattern' in '$filepath'" }
+		}
+
+		when (secondPattern) {
+			"vertex" -> vertexSrc = splitSrc[2]
+			"fragment" -> fragmentSrc = splitSrc[2]
+			else -> LOGGER.exitError { "Unexpected token '$secondPattern' in '$filepath'" }
+		}
+	}
 
 	override fun compile() {
 		val vertexShader = compileShader(vertexSrc, GL_VERTEX_SHADER)
@@ -29,7 +71,7 @@ internal class OpenGLShader(
 		val success = glGetProgrami(programID, GL_LINK_STATUS)
 		if (success == GL_FALSE) {
 			val infoLog = glGetProgramInfoLog(programID)
-			LOGGER.error { "Failed to link shader program: $infoLog" }
+			LOGGER.exitError { "Failed to link shader program: $infoLog" }
 		}
 
 		glDeleteShader(vertexShader)
@@ -44,7 +86,7 @@ internal class OpenGLShader(
 		val success = glGetShaderi(shader, GL_COMPILE_STATUS)
 		if (success == GL_FALSE) {
 			val infoLog = glGetShaderInfoLog(shader)
-			LOGGER.error { "Failed to compile shader: $infoLog" }
+			LOGGER.exitError { "Failed to compile shader: $infoLog" }
 		}
 
 		return shader
@@ -52,6 +94,7 @@ internal class OpenGLShader(
 
 	override fun <T> setUniform(name: String, value: T) {
 		when (value) {
+			is Boolean -> setInt(name, if (value) 1 else 0)
 			is Int -> setInt(name, value)
 			is Float -> setFloat(name, value)
 			is IntArray -> setInts(name, value)
@@ -62,6 +105,10 @@ internal class OpenGLShader(
 			is Vector2f -> setVector2f(name, value)
 			is Vector3f -> setVector3f(name, value)
 			is Vector4f -> setVector4f(name, value)
+			else -> LOGGER.exitError {
+				val typename = value!!::class.simpleName
+				"Uniform type '$typename' is not supported!"
+			}
 		}
 	}
 

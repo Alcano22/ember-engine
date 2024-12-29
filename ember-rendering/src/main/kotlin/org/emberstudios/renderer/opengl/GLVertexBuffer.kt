@@ -3,7 +3,7 @@ package org.emberstudios.renderer.opengl
 import org.emberstudios.renderer.VertexBuffer
 import org.lwjgl.opengl.GL15.*
 
-internal class OpenGLVertexBuffer : VertexBuffer() {
+internal class GLVertexBuffer : VertexBuffer() {
 
 	private val id = glGenBuffers()
 

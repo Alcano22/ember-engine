@@ -4,18 +4,20 @@ import org.emberstudios.core.nullptr
 import org.emberstudios.renderer.RenderAPI
 import org.emberstudios.renderer.VertexArray
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL43.*
 import org.lwjgl.opengl.GLDebugMessageCallback
 import org.lwjgl.system.MemoryUtil
 import java.io.File
 
-internal class OpenGLRenderAPI : RenderAPI {
+internal class GLRenderAPI : RenderAPI {
 
 	override fun init() {
 		GL.createCapabilities()
 
 		glEnable(GL_DEPTH_TEST)
+
+		glEnable(GL_BLEND)
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 	}
 
 	override fun initLog(logDir: String) {

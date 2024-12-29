@@ -1,6 +1,5 @@
 package org.emberstudios.renderer.opengl
 
-import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.renderer.IndexBuffer
 import org.emberstudios.renderer.ShaderDataType
@@ -8,10 +7,10 @@ import org.emberstudios.renderer.VertexArray
 import org.emberstudios.renderer.VertexBuffer
 import org.lwjgl.opengl.GL30.*
 
-internal class OpenGLVertexArray : VertexArray {
+internal class GLVertexArray : VertexArray {
 
 	companion object {
-		private val LOGGER = getLogger<OpenGLVertexBuffer>()
+		private val LOGGER = getLogger<GLVertexBuffer>()
 
 		private fun shaderDataTypeToOpenGLBaseType(type: ShaderDataType): Int = when (type) {
 			ShaderDataType.BOOL -> GL_BOOL

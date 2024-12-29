@@ -1,7 +1,6 @@
 package org.emberstudios.renderer
 
 import org.emberstudios.core.logger.getLogger
-import org.joml.Vector2f
 import org.joml.Vector2i
 import org.joml.Vector4f
 
@@ -45,6 +44,7 @@ object Renderer {
 	fun submit(
 		shader: Shader,
 		vertexArray: VertexArray,
+		texture: Texture? = null,
 		uniforms: Map<String, Any> = emptyMap()
 	) {
 		shader.bind()
@@ -52,9 +52,17 @@ object Renderer {
 		for ((name, value) in uniforms)
 			shader.setUniform(name, value)
 
+		if (texture != null) {
+			shader.setUniform("u_Texture", 0)
+			shader.setUniform("u_UseTexture", true)
+		} else
+			shader.setUniform("u_UseTexture", false)
+
+		texture?.bind()
 		vertexArray.bind()
 		drawIndexed(vertexArray)
 		vertexArray.unbind()
+		texture?.unbind()
 
 		shader.unbind()
 	}

@@ -1,8 +1,8 @@
 package org.emberstudios.renderer
 
 data class BufferElement(
-	val name: String,
 	val type: ShaderDataType,
+	val name: String,
 	val normalized: Boolean = false
 ) {
 	val size = type.size
@@ -26,5 +26,20 @@ class BufferLayout(vararg val elements: BufferElement) : Iterable<BufferElement>
 	}
 
 	override fun iterator() = elements.iterator()
+}
 
+fun bufferLayout(block: BufferLayoutBuilder.() -> Unit): BufferLayout {
+	val builder = BufferLayoutBuilder()
+	builder.block()
+	return builder.build()
+}
+
+class BufferLayoutBuilder {
+	private val elements = mutableListOf<BufferElement>()
+
+	fun element(type: ShaderDataType, name: String, normalized: Boolean = false) {
+		elements += BufferElement(type, name, normalized)
+	}
+
+	fun build() = BufferLayout(*elements.toTypedArray())
 }

@@ -19,7 +19,6 @@ dependencies {
     implementation("org.lwjgl", "lwjgl")
     implementation("org.lwjgl", "lwjgl-opengl")
     implementation("org.lwjgl", "lwjgl-vulkan")
-    implementation("org.lwjgl", "lwjgl-stb")
     implementation("org.lwjgl", "lwjgl-openal")
 
     runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)

@@ -1,6 +1,7 @@
 package org.emberstudios.renderer
 
 import org.emberstudios.core.logger.getLogger
+import org.joml.Matrix4f
 import org.joml.Vector2i
 import org.joml.Vector4f
 
@@ -11,14 +12,17 @@ object Renderer {
 	lateinit var apiType: RenderAPIType
 		private set
 	private lateinit var api: RenderAPI
+	private lateinit var camera: Camera
 
 	private var initialized = false
 
-	fun init(apiType: RenderAPIType, context: RenderContext, renderLogDir: String, windowLogDir: String) {
+	fun init(apiType: RenderAPIType, context: RenderContext, renderLogDir: String, windowLogDir: String, camera: Camera) {
 		if (initialized) {
 			LOGGER.warn { "Renderer is already initialized!" }
 			return
 		}
+
+		this.camera = camera
 
 		context.init()
 		context.initLog(windowLogDir)
@@ -44,6 +48,7 @@ object Renderer {
 	fun submit(
 		shader: Shader,
 		vertexArray: VertexArray,
+		transformMatrix: Matrix4f,
 		texture: Texture? = null,
 		uniforms: Map<String, Any> = emptyMap()
 	) {
@@ -57,6 +62,9 @@ object Renderer {
 			shader.setUniform("u_UseTexture", true)
 		} else
 			shader.setUniform("u_UseTexture", false)
+
+		shader.setUniform("u_ViewProjection", camera.viewProjectionMatrix)
+		shader.setUniform("u_Transform", transformMatrix)
 
 		texture?.bind()
 		vertexArray.bind()

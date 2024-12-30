@@ -11,7 +11,7 @@ object ResourceManager {
     fun <T : Resource> load(path: String, loader: (String) -> T): T =
         cache.getOrPut(path) { loader(path) } as T
 
-    fun clear() {
+    fun cleanup() {
         cache.values.forEach {
             it.delete()
             LOGGER.trace { "Destroyed ${it::class.simpleName}" }

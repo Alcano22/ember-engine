@@ -6,6 +6,7 @@ import org.emberstudios.core.math.toArray
 import org.emberstudios.renderer.Shader
 import org.joml.*
 import org.lwjgl.opengl.GL20.*
+import org.lwjgl.system.MemoryStack
 import java.io.File
 
 internal class GLShader : Shader {
@@ -17,6 +18,7 @@ internal class GLShader : Shader {
 	}
 
 	private var programID = 0
+	private var compiled = false
 
 	private val filepath: String
 	private var vertexSrc = ""
@@ -76,6 +78,8 @@ internal class GLShader : Shader {
 
 		glDeleteShader(vertexShader)
 		glDeleteShader(fragmentShader)
+
+		compiled = true
 	}
 
 	private fun compileShader(src: String, type: Int): Int {
@@ -93,18 +97,31 @@ internal class GLShader : Shader {
 	}
 
 	override fun <T> setUniform(name: String, value: T) {
+		if (!compiled) {
+			LOGGER.error { "Shader is not compiled: '$filepath'" }
+			return
+		}
+
+		val loc = glGetUniformLocation(programID, name)
+		if (loc == -1) {
+			LOGGER.error { "Unknown uniform in shader '$filepath': $name" }
+			return
+		}
+
 		when (value) {
-			is Boolean -> setInt(name, if (value) 1 else 0)
-			is Int -> setInt(name, value)
-			is Float -> setFloat(name, value)
-			is IntArray -> setInts(name, value)
-			is FloatArray -> setFloats(name, value)
-			is Vector2i -> setVector2i(name, value)
-			is Vector3i -> setVector3i(name, value)
-			is Vector4i -> setVector4i(name, value)
-			is Vector2f -> setVector2f(name, value)
-			is Vector3f -> setVector3f(name, value)
-			is Vector4f -> setVector4f(name, value)
+			is Boolean -> setInt(loc, if (value) 1 else 0)
+			is Int -> setInt(loc, value)
+			is Float -> setFloat(loc, value)
+			is IntArray -> setInts(loc, value)
+			is FloatArray -> setFloats(loc, value)
+			is Vector2i -> setVector2i(loc, value)
+			is Vector3i -> setVector3i(loc, value)
+			is Vector4i -> setVector4i(loc, value)
+			is Vector2f -> setVector2f(loc, value)
+			is Vector3f -> setVector3f(loc, value)
+			is Vector4f -> setVector4f(loc, value)
+			is Matrix3f -> setMatrix3f(loc, value)
+			is Matrix4f -> setMatrix4f(loc, value)
 			else -> LOGGER.exitError {
 				val typename = value!!::class.simpleName
 				"Uniform type '$typename' is not supported!"
@@ -112,58 +129,58 @@ internal class GLShader : Shader {
 		}
 	}
 
-	private fun setInt(name: String, value: Int) {
-		val loc = glGetUniformLocation(programID, name)
-		assertUniformLocation(loc, name)
-		glUniform1i(loc, value)
+	private fun setInt(loc: Int, value: Int) = glUniform1i(loc, value)
+	private fun setFloat(loc: Int, value: Float) = glUniform1f(loc, value)
+
+	private fun setInts(loc: Int, values: IntArray) = when (values.size) {
+		2 -> glUniform2i(loc, values[0], values[1])
+		3 -> glUniform3i(loc, values[0], values[1], values[2])
+		4 -> glUniform4i(loc, values[0], values[1], values[2], values[3])
+		else -> LOGGER.error { "Unsupported int array size: ${values.size}" }
 	}
 
-	private fun setFloat(name: String, value: Float) {
-		val loc = glGetUniformLocation(programID, name)
-		assertUniformLocation(loc, name)
-		glUniform1f(loc, value)
+	private fun setFloats(loc: Int, values: FloatArray) = when (values.size) {
+		2 -> glUniform2f(loc, values[0], values[1])
+		3 -> glUniform3f(loc, values[0], values[1], values[2])
+		4 -> glUniform4f(loc, values[0], values[1], values[2], values[3])
+		else -> LOGGER.error { "Unsupported float array size: ${values.size}" }
 	}
 
-	private fun setInts(name: String, values: IntArray) {
-		val loc = glGetUniformLocation(programID, name)
-		assertUniformLocation(loc, name)
-		when (values.size) {
-			2 -> glUniform2i(loc, values[0], values[1])
-			3 -> glUniform3i(loc, values[0], values[1], values[2])
-			4 -> glUniform4i(loc, values[0], values[1], values[2], values[3])
-			else -> LOGGER.error { "Unsupported int array size: ${values.size}" }
-		}
+	private fun setVector2i(loc: Int, vec2i: Vector2i) = setInts(loc, vec2i.toArray())
+	private fun setVector3i(loc: Int, vec3i: Vector3i) = setInts(loc, vec3i.toArray())
+	private fun setVector4i(loc: Int, vec4i: Vector4i) = setInts(loc, vec4i.toArray())
+
+	private fun setVector2f(loc: Int, vec2f: Vector2f) = setFloats(loc, vec2f.toArray())
+	private fun setVector3f(loc: Int, vec3f: Vector3f) = setFloats(loc, vec3f.toArray())
+	private fun setVector4f(loc: Int, vec4f: Vector4f) = setFloats(loc, vec4f.toArray())
+
+	private fun setMatrix3f(loc: Int, mat3f: Matrix3f) = MemoryStack.stackPush().use { stack ->
+		val buffer = stack.mallocFloat(9)
+		mat3f.get(buffer)
+		glUniformMatrix3fv(loc, false, buffer)
 	}
 
-	private fun setFloats(name: String, values: FloatArray) {
-		val loc = glGetUniformLocation(programID, name)
-		assertUniformLocation(loc, name)
-		when (values.size) {
-			2 -> glUniform2f(loc, values[0], values[1])
-			3 -> glUniform3f(loc, values[0], values[1], values[2])
-			4 -> glUniform4f(loc, values[0], values[1], values[2], values[3])
-			else -> LOGGER.error { "Unsupported float array size: ${values.size}" }
-		}
-	}
-
-	private fun setVector2i(name: String, vec2i: Vector2i) = setInts(name, vec2i.toArray())
-	private fun setVector3i(name: String, vec3i: Vector3i) = setInts(name, vec3i.toArray())
-	private fun setVector4i(name: String, vec4i: Vector4i) = setInts(name, vec4i.toArray())
-
-	private fun setVector2f(name: String, vec2f: Vector2f) = setFloats(name, vec2f.toArray())
-	private fun setVector3f(name: String, vec3f: Vector3f) = setFloats(name, vec3f.toArray())
-	private fun setVector4f(name: String, vec4f: Vector4f) = setFloats(name, vec4f.toArray())
-
-	private fun assertUniformLocation(loc: Int, name: String) {
-		if (loc == -1)
-			LOGGER.error { "Invalid uniform location: $name" }
+	private fun setMatrix4f(loc: Int, mat4f: Matrix4f) = MemoryStack.stackPush().use { stack ->
+		val buffer = stack.mallocFloat(16)
+		mat4f.get(buffer)
+		glUniformMatrix4fv(loc, false, buffer)
 	}
 
 	override fun bind() {
+		if (!compiled) {
+			LOGGER.error { "Shader is not compiled: '$filepath'" }
+			return
+		}
+
 		glUseProgram(programID)
 	}
 
 	override fun unbind() {
+		if (!compiled) {
+			LOGGER.error { "Shader is not compiled: '$filepath'" }
+			return
+		}
+
 		glUseProgram(0)
 	}
 

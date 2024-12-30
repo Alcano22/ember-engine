@@ -5,6 +5,15 @@ import org.joml.Vector2i
 
 interface Window {
 
+	companion object {
+		lateinit var apiType: WindowAPIType
+
+		fun create(apiType: WindowAPIType): Window {
+			this.apiType = apiType
+			return apiType.createWindow()
+		}
+	}
+
 	val size: Vector2i
 	val shouldClose: Boolean
 	val nativeHandle: Long

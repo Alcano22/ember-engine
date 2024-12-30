@@ -8,12 +8,15 @@ layout(location = 2) in vec2 a_TexCoord;
 out vec4 f_Color;
 out vec2 f_TexCoord;
 
+uniform mat4 u_ViewProjection;
+uniform mat4 u_Transform;
+
 void main()
 {
     f_Color = a_Color;
     f_TexCoord = a_TexCoord;
 
-    gl_Position = vec4(a_Position, 0.0, 1.0);
+    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 0.0, 1.0);
 }
 
 #type fragment

@@ -21,6 +21,7 @@ plugins {
 include(":ember-engine")
 include(":ember-core")
 include(":ember-input")
+include(":ember-editor")
 include(":ember-rendering")
 include(":ember-windowing")
 

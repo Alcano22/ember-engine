@@ -3,11 +3,11 @@ package org.emberstudios.renderer.opengl
 import org.emberstudios.renderer.VertexBuffer
 import org.lwjgl.opengl.GL15.*
 
-internal class GLVertexBuffer : VertexBuffer() {
+internal class GLVertexBuffer(vertices: FloatArray) : VertexBuffer() {
 
 	private val id = glGenBuffers()
 
-	override fun setVertices(vertices: FloatArray) {
+	init {
 		glBindBuffer(GL_ARRAY_BUFFER, id)
 		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
 	}

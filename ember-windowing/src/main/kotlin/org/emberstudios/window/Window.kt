@@ -1,6 +1,8 @@
 package org.emberstudios.window
 
+import org.emberstudios.core.window.WindowAPIType
 import org.emberstudios.renderer.RenderContext
+import org.emberstudios.window.glfw.GLFWWindow
 import org.joml.Vector2i
 
 interface Window {
@@ -10,7 +12,9 @@ interface Window {
 
 		fun create(apiType: WindowAPIType): Window {
 			this.apiType = apiType
-			return apiType.createWindow()
+			return when (apiType) {
+				WindowAPIType.GLFW -> GLFWWindow()
+			}
 		}
 	}
 

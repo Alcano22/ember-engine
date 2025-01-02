@@ -41,5 +41,28 @@ class BufferLayoutBuilder {
 		elements += BufferElement(type, name, normalized)
 	}
 
+	fun bool(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.BOOL, name, normalized)
+	fun int(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.INT, name, normalized)
+	fun int2(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.INT2, name, normalized)
+	fun int3(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.INT3, name, normalized)
+	fun int4(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.INT4, name, normalized)
+	fun float(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.FLOAT, name, normalized)
+	fun float2(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.FLOAT2, name, normalized)
+	fun float3(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.FLOAT3, name, normalized)
+	fun float4(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.FLOAT4, name, normalized)
+	fun mat3(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.MAT3, name, normalized)
+	fun mat4(name: String, normalized: Boolean = false) =
+		element(ShaderDataType.MAT4, name, normalized)
+
 	fun build() = BufferLayout(*elements.toTypedArray())
 }

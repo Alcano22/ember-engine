@@ -9,7 +9,7 @@ class Transform : Component() {
 	var rotation = 0f
 	var scale = Vector2f(1f, 1f)
 
-	fun toMatrix() = Matrix4f()
+	fun toMatrix(): Matrix4f = Matrix4f()
 		.translate(Vector3f(position, 0f))
 		.rotateZ(rotation)
 		.scale(Vector3f(scale, 1f))

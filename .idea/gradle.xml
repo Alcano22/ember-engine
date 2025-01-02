@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/ember-core" />
+            <option value="$PROJECT_DIR$/ember-editor" />
             <option value="$PROJECT_DIR$/ember-engine" />
             <option value="$PROJECT_DIR$/ember-input" />
             <option value="$PROJECT_DIR$/ember-rendering" />

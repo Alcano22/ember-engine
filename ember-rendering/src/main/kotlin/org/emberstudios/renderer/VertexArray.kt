@@ -2,6 +2,7 @@ package org.emberstudios.renderer
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.emberstudios.core.logger.exitError
+import org.emberstudios.core.renderer.GraphicsAPIType
 import org.emberstudios.renderer.opengl.GLVertexArray
 
 interface VertexArray {
@@ -10,8 +11,8 @@ interface VertexArray {
 		private val FACTORY_LOGGER = KotlinLogging.logger("VertexArrayFactory")
 
 		fun create(): VertexArray = when (Renderer.apiType) {
-			RenderAPIType.OPEN_GL -> GLVertexArray()
-			RenderAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }
+			GraphicsAPIType.OPEN_GL -> GLVertexArray()
+			GraphicsAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }
 		}
 	}
 

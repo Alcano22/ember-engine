@@ -11,6 +11,7 @@ dependencies {
 	// Project "engine" depends on project "utils". (Project paths are separated with ":", so ":utils" refers to the top-level "utils" project.)
 	implementation(project(":ember-core"))
 	implementation(project(":ember-input"))
+	implementation(project(":ember-editor"))
 	implementation(project(":ember-rendering"))
 	implementation(project(":ember-windowing"))
 }

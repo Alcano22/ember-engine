@@ -19,15 +19,20 @@ object Input : InputManager {
 	val mouseDelta get() = mousePosition - mouseLastPosition
 	val mouseScrollDelta get() = mouse.scrollDelta
 
+	var blockingCallback: () -> Pair<Boolean, Boolean> = { false to false }
+
+	private val blockKeyboard get() = blockingCallback().first
+	private val blockMouse get() = blockingCallback().second
+
 	fun endFrame() {
 		keyboard.endFrame()
 		mouse.endFrame()
 	}
 
 	// Keyboard
-	fun getKey(key: Int) = keyboard.getKey(key)
-	fun getKeyDown(key: Int) = keyboard.getKeyDown(key)
-	fun getKeyUp(key: Int) = keyboard.getKeyUp(key)
+	fun getKey(key: Int) = keyboard.getKey(key) && !blockKeyboard
+	fun getKeyDown(key: Int) = keyboard.getKeyDown(key) && !blockKeyboard
+	fun getKeyUp(key: Int) = keyboard.getKeyUp(key) && !blockKeyboard
 
 	fun getAxis(axis: Axis) = when (axis) {
 		Axis.HORIZONTAL -> {
@@ -59,9 +64,9 @@ object Input : InputManager {
 	)
 
 	// Mouse
-	fun getMouseButton(button: Int) = mouse.getButton(button)
-	fun getMouseButtonDown(button: Int) = mouse.getButtonDown(button)
-	fun getMouseButtonUp(button: Int) = mouse.getButtonUp(button)
+	fun getMouseButton(button: Int) = mouse.getButton(button) && !blockMouse
+	fun getMouseButtonDown(button: Int) = mouse.getButtonDown(button) && !blockMouse
+	fun getMouseButtonUp(button: Int) = mouse.getButtonUp(button) && !blockMouse
 
 	override fun getKeyboardCallback() = keyboard
 	override fun getMouseCallback() = mouse

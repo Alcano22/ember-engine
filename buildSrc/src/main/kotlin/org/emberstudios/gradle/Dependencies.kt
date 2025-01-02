@@ -18,11 +18,17 @@ fun getLWJGLNatives() = Pair(
 				"natives-linux-riscv64"
 			else
 				"natives-linux"
-		arrayOf("Mac OS X", "Darwin").any { name.startsWith(it) }     ->
-			"natives-macos"
-		arrayOf("Windows").any { name.startsWith(it) }                ->
-			"natives-windows"
-		else ->
-			throw Error("Unrecognized or unsupported platform. Please set \"lwjglNatives\" manually")
+		arrayOf("Mac OS X", "Darwin").any { name.startsWith(it) } -> "natives-macos"
+		arrayOf("Windows").any { name.startsWith(it) } -> "natives-windows"
+		else -> throw Error("Unrecognized or unsupported platform. Please set 'lwjglNatives' manually")
+	}
+}
+
+fun getImGuiNatives() = System.getProperty("os.name").let { name ->
+	when {
+		arrayOf("Linux", "SunOS", "Unit").any { name.startsWith(it) } -> "natives-linux"
+		arrayOf("Mac OS X", "Darwin").any { name.startsWith(it) } -> "natives-macos"
+		arrayOf("Windows").any { name.startsWith(it) } -> "natives-windows"
+		else -> throw Error("Unrecognized or unsupported platform. Please set 'imguiNatives' manually")
 	}
 }

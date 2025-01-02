@@ -2,8 +2,7 @@ package org.emberstudios.core.io
 
 import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
-import org.lwjgl.stb.STBImage.stbi_load
-import org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load
+import org.lwjgl.stb.STBImage.*
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 
@@ -17,10 +16,6 @@ object ImageLoader {
         val channels: Int,
         val data: ByteBuffer
     )
-
-    init {
-        stbi_set_flip_vertically_on_load(true)
-    }
 
     fun load(path: String): ImageData {
         MemoryStack.stackPush().use { stack ->
@@ -39,6 +34,8 @@ object ImageLoader {
             )
         }
     }
+
+    fun free(data: ByteBuffer) = stbi_image_free(data)
 
     fun isTransparent(image: ImageData) = image.channels == 4
 

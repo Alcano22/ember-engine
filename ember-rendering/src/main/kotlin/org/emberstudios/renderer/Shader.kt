@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.emberstudios.core.io.Resource
 import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.exitError
+import org.emberstudios.core.renderer.GraphicsAPIType
 import org.emberstudios.renderer.opengl.GLShader
 
 interface Shader : Resource {
@@ -11,13 +12,13 @@ interface Shader : Resource {
 		private val FACTORY_LOGGER = KotlinLogging.logger("ShaderFactory")
 
 		fun create(vertexSrc: String, fragmentSrc: String): Shader = when (Renderer.apiType) {
-			RenderAPIType.OPEN_GL -> GLShader(vertexSrc, fragmentSrc)
-			RenderAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }
+			GraphicsAPIType.OPEN_GL -> GLShader(vertexSrc, fragmentSrc)
+			GraphicsAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }
 		}
 
 		fun create(filepath: String): Shader = when (Renderer.apiType) {
-			RenderAPIType.OPEN_GL -> GLShader(filepath)
-			RenderAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }
+			GraphicsAPIType.OPEN_GL -> GLShader(filepath)
+			GraphicsAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }
 		}
 	}
 

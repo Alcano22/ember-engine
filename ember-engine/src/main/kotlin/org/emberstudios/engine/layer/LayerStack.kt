@@ -36,7 +36,9 @@ class LayerStack : Iterable<Layer> {
 
 	fun update(deltaTime: Float) = layers.forEach { it.onUpdate(deltaTime) }
 	fun render() = layers.forEach { it.onRender() }
-	fun renderImGui() = layers.forEach { it.onImGuiRender() }
+	fun renderImGui() = layers.forEach { it.onRenderImGui() }
+
+	fun onWindowResize(width: Int, height: Int) = layers.forEach { it.onWindowResize(width, height) }
 
 	fun cleanup() {
 		layers.forEach { it.onDetach() }

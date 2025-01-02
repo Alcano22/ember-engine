@@ -1,13 +1,11 @@
 package org.emberstudios.window.glfw
 
+import org.emberstudios.core.WindowHandle
 import org.emberstudios.renderer.RenderContext
-import org.emberstudios.window.WindowHandle
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import java.io.File
-import java.io.FileOutputStream
 import java.io.PrintStream
-import java.io.PrintWriter
 
 class GLFWContext(private val windowHandle: WindowHandle) : RenderContext {
 
@@ -23,5 +21,8 @@ class GLFWContext(private val windowHandle: WindowHandle) : RenderContext {
 	}
 
 	override fun swapBuffers() = glfwSwapBuffers(windowHandle)
+	override fun makeContextCurrent(windowHandle: WindowHandle) = glfwMakeContextCurrent(windowHandle)
+
+	override fun getCurrentContext() = glfwGetCurrentContext()
 
 }

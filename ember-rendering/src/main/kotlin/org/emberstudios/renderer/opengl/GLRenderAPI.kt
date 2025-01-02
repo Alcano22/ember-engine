@@ -14,7 +14,6 @@ internal class GLRenderAPI : RenderAPI {
 	override fun init() {
 		GL.createCapabilities()
 
-
 		glEnable(GL_DEPTH_TEST)
 
 		glEnable(GL_BLEND)

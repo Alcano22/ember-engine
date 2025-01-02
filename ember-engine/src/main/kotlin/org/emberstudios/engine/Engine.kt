@@ -1,18 +1,20 @@
 package org.emberstudios.engine
 
+import imgui.ImGui
 import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.getLogger
+import org.emberstudios.core.renderer.GraphicsAPIType
 import org.emberstudios.engine.layer.ImGuiLayer
-import org.emberstudios.engine.layer.Layer
 import org.emberstudios.engine.layer.LayerStack
-import org.emberstudios.engine.layer.TestLayer
+import org.emberstudios.engine.layer.EditorLayer
 import org.emberstudios.engine.util.Time
 import org.emberstudios.input.Input
 import org.emberstudios.renderer.RenderContext
 import org.emberstudios.renderer.Renderer
 import org.emberstudios.window.InputHandler
 import org.emberstudios.window.Window
-import org.emberstudios.window.WindowAPIType
+import org.emberstudios.core.window.WindowAPIType
+import org.emberstudios.engine.layer.Layer
 
 object Engine {
 
@@ -23,7 +25,9 @@ object Engine {
 
 	private lateinit var renderContext: RenderContext
 	private lateinit var inputHandler: InputHandler
+
 	private lateinit var layerStack: LayerStack
+	private lateinit var imGuiLayer: ImGuiLayer
 
 	fun run() {
 		init()
@@ -39,14 +43,24 @@ object Engine {
 		renderContext = window.createRenderContext()
 		renderContext.init()
 
-		window.setResizeCallback { width, height -> Renderer.viewport(width, height) }
+		Renderer.init(
+			GraphicsAPIType.OPEN_GL,
+			renderContext,
+			"logs/",
+			"logs/"
+		)
+
+		layerStack = LayerStack()
+
+		window.setResizeCallback { width, height -> layerStack.onWindowResize(width, height) }
 
 		inputHandler = InputHandler.create(Input)
 		inputHandler.init(window.nativeHandle)
 
-		layerStack = LayerStack()
-		layerStack.pushLayer(TestLayer(renderContext))
-		layerStack.pushOverlay(ImGuiLayer())
+		layerStack.pushLayer(EditorLayer())
+
+		imGuiLayer = ImGuiLayer(renderContext)
+		layerStack.pushOverlay(imGuiLayer)
 	}
 
 	private fun loop() {
@@ -60,7 +74,10 @@ object Engine {
 
 			layerStack.update(Time.deltaTime)
 			layerStack.render()
+
+			imGuiLayer.begin()
 			layerStack.renderImGui()
+			imGuiLayer.end()
 
 			Input.endFrame()
 

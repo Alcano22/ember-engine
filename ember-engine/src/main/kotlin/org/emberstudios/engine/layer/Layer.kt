@@ -5,5 +5,7 @@ interface Layer {
 	fun onDetach() {}
 	fun onUpdate(deltaTime: Float) {}
 	fun onRender() {}
-	fun onImGuiRender() {}
+	fun onRenderImGui() {}
+
+	fun onWindowResize(width: Int, height: Int) {}
 }

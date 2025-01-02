@@ -3,8 +3,7 @@ package org.emberstudios.renderer.opengl
 import org.emberstudios.core.io.ImageLoader
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.renderer.Texture
-import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL30.*
+import org.lwjgl.opengl.GL45.*
 
 internal class GLTexture(val filepath: String) : Texture {
 
@@ -20,44 +19,55 @@ internal class GLTexture(val filepath: String) : Texture {
     init {
         val image = ImageLoader.load(filepath)
 
-        texID = glGenTextures()
-        glBindTexture(GL_TEXTURE_2D, texID)
+        texID = glCreateTextures(GL_TEXTURE_2D)
+        bind()
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
-        val format = if (image.channels == 4) GL_RGBA else GL_RGB
+        var internalFormat = 0
+        var dataFormat = 0
+        when (image.channels) {
+            3 -> {
+                internalFormat = GL_RGB8
+                dataFormat = GL_RGB
+            }
+            4 -> {
+                internalFormat = GL_RGBA8
+                dataFormat = GL_RGBA
+            }
+        }
+
         width = image.width
         height = image.height
 
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
-            format,
+            internalFormat,
             width,
             height,
             0,
-            format,
+            dataFormat,
             GL_UNSIGNED_BYTE,
             image.data
         )
 
         glGenerateMipmap(GL_TEXTURE_2D)
+
+        ImageLoader.free(image.data)
+
+        unbind()
     }
 
-    override fun bind() {
-        glBindTexture(GL_TEXTURE_2D, texID)
-    }
+    override fun bind() = glBindTexture(GL_TEXTURE_2D, texID)
+    override fun unbind() = glBindTexture(GL_TEXTURE_2D, 0)
+    override fun delete() = glDeleteTextures(texID)
 
-    override fun unbind() {
-        glBindTexture(GL_TEXTURE_2D, 0)
-    }
-
-    override fun delete() {
-        glDeleteTextures(texID)
-    }
+    override fun activate(slot: Int) = glActiveTexture(GL_TEXTURE0 + slot)
+    override fun deactivate(slot: Int) = glActiveTexture(0)
 
     override fun getID() = texID
     override fun getWidth() = width

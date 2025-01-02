@@ -1,11 +1,11 @@
 package org.emberstudios.window.glfw
 
+import org.emberstudios.core.WindowHandle
 import org.emberstudios.core.input.InputAction
 import org.emberstudios.core.input.InputManager
 import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.window.InputHandler
-import org.emberstudios.window.WindowHandle
 import org.lwjgl.glfw.GLFW.*
 
 internal class GLFWInputHandler(inputManager: InputManager) : InputHandler {

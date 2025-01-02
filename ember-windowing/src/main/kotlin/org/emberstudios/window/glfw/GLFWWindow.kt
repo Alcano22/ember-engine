@@ -1,10 +1,9 @@
 package org.emberstudios.window.glfw
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.emberstudios.core.WindowHandle
 import org.emberstudios.core.nullptr
-import org.emberstudios.renderer.RenderContext
 import org.emberstudios.window.Window
-import org.emberstudios.window.WindowHandle
 import org.joml.Vector2i
 import org.lwjgl.glfw.GLFW.*
 

@@ -1,5 +1,6 @@
 package org.emberstudios.engine.layer
 
+import imgui.ImFontConfig
 import imgui.ImGui
 import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiConfigFlags
@@ -11,7 +12,10 @@ import org.emberstudios.renderer.Renderer
 import org.emberstudios.window.Window
 import org.emberstudios.window.glfw.GLFWContext
 
-class ImGuiLayer(renderContext: RenderContext) : Layer {
+class ImGuiLayer(
+	private val window: Window,
+	renderContext: RenderContext
+) : Layer {
 
 	companion object {
 		private val LOGGER = getLogger<ImGuiLayer>()
@@ -34,6 +38,16 @@ class ImGuiLayer(renderContext: RenderContext) : Layer {
 				ImGuiConfigFlags.DockingEnable or
 				ImGuiConfigFlags.ViewportsEnable or
 				ImGuiConfigFlags.DpiEnableScaleFonts
+
+		io.fontGlobalScale = window.dpiScale
+		io.fonts.clear()
+
+		val fontConfig = ImFontConfig().apply {
+			fontDataOwnedByAtlas = false
+			oversampleH = 2
+			oversampleV = 2
+		}
+		io.fonts.addFontFromFileTTF("assets/fonts/Inter_28pt-Regular.ttf", 20f, fontConfig)
 
 		ImGui.styleColorsDark()
 

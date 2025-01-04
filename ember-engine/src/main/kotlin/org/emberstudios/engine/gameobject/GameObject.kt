@@ -1,12 +1,14 @@
 package org.emberstudios.engine.gameobject
 
+import imgui.ImGui
+import imgui.type.ImString
 import org.emberstudios.engine.gameobject.component.Component
 import org.emberstudios.engine.gameobject.component.Transform
 import org.joml.Vector2f
 import kotlin.reflect.full.createInstance
 
 class GameObject(
-	val name: String = "GameObject",
+	var name: String = "GameObject",
 	position: Vector2f = Vector2f(),
 	rotation: Float = 0f,
 	scale: Vector2f = Vector2f(1f, 1f)
@@ -24,7 +26,10 @@ class GameObject(
 		}
 	}
 
-	fun init() = components.forEach { it.init() }
+	fun init() = components.forEach {
+		it.gameObject = this
+		it.init()
+	}
 
 	fun update(deltaTime: Float) = components.forEach {
 		it.gameObject = this
@@ -32,6 +37,12 @@ class GameObject(
 	}
 
 	fun render() = components.forEach { it.render() }
+
+	fun renderImGui() {
+		val imName = ImString(name)
+		if (ImGui.inputText("Name", imName))
+			name = imName.get()
+	}
 
 	inline fun <reified T : Component> addComponent(configure: T.() -> Unit = {}): T {
 		val component = T::class.createInstance()

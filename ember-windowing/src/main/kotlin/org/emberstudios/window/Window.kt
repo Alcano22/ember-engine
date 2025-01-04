@@ -21,6 +21,7 @@ interface Window {
 	val size: Vector2i
 	val shouldClose: Boolean
 	val nativeHandle: Long
+	val dpiScale: Float
 	val time: Float
 
 	fun init(title: String, width: Int, height: Int): Boolean

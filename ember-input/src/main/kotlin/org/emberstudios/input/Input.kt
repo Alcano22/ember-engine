@@ -17,9 +17,10 @@ object Input : InputManager {
 	val mousePosition get() = mouse.position
 	val mouseLastPosition get() = mouse.lastPosition
 	val mouseDelta get() = mousePosition - mouseLastPosition
-	val mouseScrollDelta get() = mouse.scrollDelta
+	val mouseScrollDelta get() = if (blockMouse) Vector2f() else mouse.scrollDelta
 
 	var blockingCallback: () -> Pair<Boolean, Boolean> = { false to false }
+	var mouseViewportPosition = Vector2f(-1f, -1f)
 
 	private val blockKeyboard get() = blockingCallback().first
 	private val blockMouse get() = blockingCallback().second

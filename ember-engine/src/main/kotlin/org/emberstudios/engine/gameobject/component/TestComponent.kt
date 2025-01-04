@@ -1,6 +1,5 @@
 package org.emberstudios.engine.gameobject.component
 
-import imgui.ImGui
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.input.Input
 import org.joml.Math
@@ -14,8 +13,6 @@ class TestComponent : Component() {
 	}
 
 	override fun update(deltaTime: Float) {
-		LOGGER.debug { "ImGui capture keyboard: ${ImGui.getIO().wantCaptureKeyboard}" }
-
 		transform.position += Input.getAxes() * deltaTime * 2.5f
 
 		var value = transform.scale.x

@@ -59,7 +59,7 @@ object Engine {
 
 		layerStack.pushLayer(EditorLayer())
 
-		imGuiLayer = ImGuiLayer(renderContext)
+		imGuiLayer = ImGuiLayer(window, renderContext)
 		layerStack.pushOverlay(imGuiLayer)
 	}
 

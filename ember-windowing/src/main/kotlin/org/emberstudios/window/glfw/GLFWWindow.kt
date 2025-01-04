@@ -15,9 +15,6 @@ internal class GLFWWindow : Window {
 
 	private var handle: WindowHandle = 0L
 
-	override val nativeHandle: Long
-		get() = handle
-
 	override val size: Vector2i
 		get() {
 			val pWidth = IntArray(1)
@@ -26,11 +23,15 @@ internal class GLFWWindow : Window {
 			return Vector2i(pWidth[0], pHeight[0])
 		}
 
-	override val shouldClose: Boolean
-		get() = glfwWindowShouldClose(handle)
-
-	override val time: Float
-		get() = glfwGetTime().toFloat()
+	override val shouldClose get() = glfwWindowShouldClose(handle)
+	override val nativeHandle get() = handle
+	override val dpiScale: Float
+		get() {
+			val scale = FloatArray(1)
+			glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), scale, FloatArray(1))
+			return scale[0]
+		}
+	override val time get() = glfwGetTime().toFloat()
 
 	override fun init(title: String, width: Int, height: Int): Boolean {
 		if (!glfwInit()) {

@@ -11,7 +11,6 @@ class Scene {
     fun init() = _gameObjects.forEach { it.init() }
     fun update(deltaTime: Float) = _gameObjects.forEach { it.update(deltaTime) }
     fun render() = _gameObjects.forEach { it.render() }
-    fun renderImGui() = _gameObjects.forEach { it.renderImGui() }
     fun clear() = _gameObjects.clear()
 
     fun loadGameObject(gameObject: GameObject): GameObject {

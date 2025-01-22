@@ -17,7 +17,6 @@ class SceneManager {
     fun init() = executeIfSceneLoaded { init() }
     fun update(deltaTime: Float) = executeIfSceneLoaded { update(deltaTime) }
     fun render() = executeIfSceneLoaded { render() }
-    fun renderImGui() = executeIfSceneLoaded { renderImGui() }
     fun clear() = executeIfSceneLoaded { clear() }
 
     fun loadGameObject(gameObject: GameObject) =

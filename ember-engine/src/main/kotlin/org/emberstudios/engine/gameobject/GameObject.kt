@@ -4,6 +4,7 @@ import imgui.ImGui
 import imgui.flag.ImGuiInputTextFlags
 import imgui.type.ImString
 import org.emberstudios.core.utils.GID
+import org.emberstudios.engine.editor.Inspectable
 import org.emberstudios.engine.gameobject.component.Component
 import org.emberstudios.engine.gameobject.component.Transform
 import org.joml.Vector2f
@@ -14,7 +15,7 @@ class GameObject(
 	position: Vector2f = Vector2f(),
 	rotation: Float = 0f,
 	scale: Vector2f = Vector2f(1f, 1f)
-) {
+) : Inspectable {
 
 	val components = mutableListOf<Component>()
 	val gid = GID()
@@ -48,7 +49,7 @@ class GameObject(
 
 	fun render() = components.forEach { it.render() }
 
-	fun renderImGui() {
+	override fun inspect() {
 		val imName = ImString(name, 64)
 		if (ImGui.inputText("Name", imName))
 			name = imName.get()

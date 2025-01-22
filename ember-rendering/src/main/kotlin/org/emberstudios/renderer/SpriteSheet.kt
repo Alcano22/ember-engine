@@ -1,5 +1,6 @@
 package org.emberstudios.renderer
 
+import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
 
@@ -12,7 +13,7 @@ class SpriteSheet(
         val LOGGER = getLogger<SpriteSheet>()
     }
 
-    private val texture = Texture.create(filepath)
+    private val texture = ResourceManager.loadTexture(filepath)
     private val cols = texture.width / cellWidth
     private val rows = texture.height / cellHeight
 

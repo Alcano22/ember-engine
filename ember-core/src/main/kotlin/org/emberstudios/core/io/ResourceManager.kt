@@ -8,8 +8,7 @@ object ResourceManager {
 
     private val cache = mutableMapOf<String, Resource>()
 
-    fun <T : Resource> load(path: String, loader: (String) -> T): T =
-        cache.getOrPut(path) { loader(path) } as T
+    fun <T : Resource> load(path: String, loader: (String) -> T) = cache.getOrPut(path) { loader(path) } as T
 
     fun cleanup() {
         cache.values.forEach {

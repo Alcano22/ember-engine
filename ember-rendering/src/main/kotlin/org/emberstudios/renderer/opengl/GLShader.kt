@@ -38,14 +38,15 @@ internal class GLShader : Shader {
 			LOGGER.exitError { "File not found: '$filepath'" }
 
 		val src = file.readText()
+
 		val splitSrc = src.split(Regex("($TYPE_PREFIX)( )+([a-zA-Z]+)"))
 
 		var index = src.indexOf(TYPE_PREFIX) + 6
-		var eol = src.indexOf("\r\n", index)
+		var eol = src.indexOf("\n", index)
 		val firstPattern = src.substring(index, eol).trim()
 
 		index = src.indexOf(TYPE_PREFIX, eol) + 6
-		eol = src.indexOf("\r\n", index)
+		eol = src.indexOf("\n", index)
 		val secondPattern = src.substring(index, eol).trim()
 
 		when (firstPattern) {

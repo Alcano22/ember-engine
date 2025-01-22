@@ -1,23 +1,31 @@
 package org.emberstudios.engine.editor
 
 import org.emberstudios.core.logger.getLogger
-import org.emberstudios.engine.gameobject.GameObject
-import org.emberstudios.renderer.Camera
 
-class InspectorWindow(
-	private val cam: Camera, showing: Boolean = false
-) : EditorWindow("Inspector", showing) {
+interface Inspectable {
+	fun inspect()
+}
+
+class InspectorWindow(showing: Boolean = false) : EditorWindow("Inspector", showing) {
 
 	companion object {
 		val LOGGER = getLogger<InspectorWindow>()
+
+		lateinit var instance: InspectorWindow
+			private set
+
+		fun inspect(inspectable: Inspectable?) = instance.inspect(inspectable)
+		fun isInspected(inspectable: Inspectable?) = instance.isInspected(inspectable)
 	}
 
-	private var inspectedGameObject: GameObject? = null
+	private var inspected: Inspectable? = null
 
-	override fun renderContent() {
-		inspectedGameObject?.renderImGui()
+	init {
+		instance = this
 	}
 
-	fun inspect(gameObject: GameObject?) { inspectedGameObject = gameObject }
-	fun isInspected(gameObject: GameObject?) = inspectedGameObject == gameObject
+	override fun renderContent() { inspected?.inspect() }
+
+	fun inspect(inspectable: Inspectable?) { inspected = inspectable }
+	fun isInspected(inspectable: Inspectable?) = inspected == inspectable
 }

@@ -1,3 +1,42 @@
-<fontcfg name="Baban" size="16" texture="baban.png" yPadding="1">
-    <char char="a" width="3" x="0"  />
+<fontcfg name="Baban" size="16" texture="baban.png" defaultWidth="5" defaultHeight="5">
+    <char char="A" x="0"  y="0" />
+    <char char="B" x="5"  y="0" />
+    <char char="C" x="10" y="0" />
+    <char char="D" x="15" y="0" />
+    <char char="E" x="20" y="0" />
+    <char char="F" x="25" y="0" />
+    <char char="G" x="30" y="0" />
+    <char char="H" x="35" y="0" />
+    <char char="I" x="40" y="0" />
+    <char char="J" x="45" y="0" />
+    <char char="K" x="50" y="0" />
+    <char char="L" x="55" y="0" />
+    <char char="M" x="60" y="0" width="7" />
+    <char char="N" x="0" y="6" width="6" />
+    <char char="O" x="6" y="6" />
+    <char char="P" x="11" y="6" />
+    <char char="Q" x="16" y="6" width="6" />
+    <char char="R" x="22" y="6" />
+    <char char="S" x="27" y="6" />
+    <char char="T" x="32" y="6" />
+    <char char="U" x="37" y="6" />
+    <char char="V" x="42" y="6" />
+    <char char="W" x="47" y="6" width="7" />
+    <char char="X" x="54" y="6" />
+    <char char="Y" x="59" y="6" />
+    <char char="Z" x="64" y="6" />
+    <char char="1" x="0" y="12" />
+    <char char="2" x="5" y="12" />
+    <char char="3" x="10" y="12" />
+    <char char="4" x="15" y="12" />
+    <char char="5" x="20" y="12" />
+    <char char="6" x="25" y="12" />
+    <char char="7" x="30" y="12" />
+    <char char="8" x="35" y="12" />
+    <char char="9" x="40" y="12" />
+    <char char="0" x="45" y="12" />
+    <char char="," x="50" y="12" width="3" />
+    <char char="." x="53" y="12" width="3" />
+    <char char="?" x="56" y="12" width="6" />
+    <char char="!" x="62" y="12" width="4" />
 </fontcfg>

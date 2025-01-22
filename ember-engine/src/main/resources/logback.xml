@@ -22,6 +22,12 @@
         </filter>
     </appender>
 
+    <appender name="EDITOR_CONSOLE" class="org.emberstudios.engine.util.ConsoleWindowLogAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>[%d{HH:mm:ss}][%thread][%level][%class{0}.%method\(%file:%line\)] \(%logger{36}\) %msg%n</pattern>
+        </layout>
+    </appender>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/latest.log</file>
 
@@ -41,6 +47,7 @@
     <root level="trace">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ERROR_CONSOLE" />
+        <appender-ref ref="EDITOR_CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
 </configuration>

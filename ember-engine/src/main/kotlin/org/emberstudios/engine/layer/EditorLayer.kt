@@ -4,10 +4,7 @@ import imgui.ImGui
 import imgui.flag.ImGuiDockNodeFlags
 import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.getLogger
-import org.emberstudios.engine.editor.EditorWindow
-import org.emberstudios.engine.editor.HierarchyWindow
-import org.emberstudios.engine.editor.InspectorWindow
-import org.emberstudios.engine.editor.ViewportWindow
+import org.emberstudios.engine.editor.*
 import org.emberstudios.engine.gameobject.GameObject
 import org.emberstudios.engine.gameobject.component.SpriteRenderer
 import org.emberstudios.engine.gameobject.component.TestComponent
@@ -47,15 +44,22 @@ class EditorLayer : Layer {
 
 		framebuffer = Framebuffer.create(Framebuffer.Specs(1, 1))
 
+		editorWindows += ConsoleWindow(true)
 		editorWindows += ViewportWindow(framebuffer, this, true)
-		val inspectorWindow = InspectorWindow(camera, true)
+		val inspectorWindow = InspectorWindow(true)
 		editorWindows += inspectorWindow
-		editorWindows += HierarchyWindow(inspectorWindow, sceneManager, true)
+		editorWindows += HierarchyWindow(sceneManager, true)
 
 		spritesheet = SpriteSheet("assets/textures/link.png", 3, 3)
 
 		initScene()
 		editorWindows.forEach { it.init() }
+
+		LOGGER.trace { "TEST TRACE" }
+		LOGGER.debug { "TEST DEBUG" }
+		LOGGER.info { "TEST INFO" }
+		LOGGER.warn { "TEST WARN" }
+		LOGGER.error { "TEST ERROR" }
 	}
 
 	private fun initScene() {
@@ -63,7 +67,7 @@ class EditorLayer : Layer {
 		sceneManager.loadGameObject(GameObject("Player").apply {
 			addComponent<TestComponent>()
 			addComponent<SpriteRenderer> {
-				texture = spritesheet[4, 2]
+				texture = ResourceManager.loadTexture("assets/textures/link.png")
 			}
 		})
 

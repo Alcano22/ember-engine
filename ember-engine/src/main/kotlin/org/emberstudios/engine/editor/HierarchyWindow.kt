@@ -7,7 +7,6 @@ import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.scene.SceneManager
 
 class HierarchyWindow(
-    private val inspectorWindow: InspectorWindow,
     private val sceneManager: SceneManager,
     showing: Boolean = false
 ) : EditorWindow("Scene Hierarchy", showing) {
@@ -19,13 +18,13 @@ class HierarchyWindow(
             if (ImGui.treeNodeEx(
                     "${it.name}##${it.gid}",
                     ImGuiTreeNodeFlags.OpenOnArrow or
-                    if (inspectorWindow.isInspected(it)) ImGuiTreeNodeFlags.Selected else 0)
+                    if (InspectorWindow.isInspected(it)) ImGuiTreeNodeFlags.Selected else 0)
             ) {
                 ImGui.treePop()
             }
 
             if (ImGui.isItemClicked())
-                inspectorWindow.inspect(it)
+                InspectorWindow.inspect(it)
         }
     }
 

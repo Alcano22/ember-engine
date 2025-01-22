@@ -28,5 +28,7 @@ dependencies {
 	api("ch.qos.logback:logback-classic:$logbackVersion")
 	api("org.fusesource.jansi:jansi:$jansiVersion")
 
+	api(kotlin("serialization"))
+
 	api("org.joml", "joml", jomlVersion)
 }

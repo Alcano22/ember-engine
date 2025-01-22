@@ -7,14 +7,6 @@ import org.joml.Vector4f
 class SpriteRenderer : Component() {
 
 	companion object {
-		val VERTICES = floatArrayOf(
-			// Position         TexCoord
-			 .5f,  .5f, 		1f, 0f,
-			 .5f, -.5f, 		1f, 1f,
-			-.5f, -.5f, 		0f, 1f,
-			-.5f,  .5f, 		0f, 0f
-		)
-
 		val INDICES = intArrayOf(
 			0, 1, 2,
 			2, 3, 0
@@ -34,7 +26,16 @@ class SpriteRenderer : Component() {
 
 		vao = VertexArray.create()
 
-		val vbo = VertexBuffer.create(VERTICES)
+		val (u0, v0, u1, v1) = texture?.uv ?: floatArrayOf(0f, 0f, 1f, 1f)
+		val vertices = floatArrayOf(
+			// Position         TexCoord
+			 .5f,  .5f, 		u1, v1,
+			 .5f, -.5f, 		u1, v0,
+			-.5f, -.5f, 		u0, v0,
+			-.5f,  .5f, 		u0, v1
+		)
+
+		val vbo = VertexBuffer.create(vertices)
 		vbo.layout = bufferLayout {
 			float2("a_Position")
 			float2("a_TexCoord")

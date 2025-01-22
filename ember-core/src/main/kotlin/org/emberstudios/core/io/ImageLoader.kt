@@ -23,8 +23,10 @@ object ImageLoader {
             val pHeight = stack.mallocInt(1)
             val pChannels = stack.mallocInt(1)
 
+            stbi_set_flip_vertically_on_load(true)
             val buffer = stbi_load(path, pWidth, pHeight, pChannels, 0)
                 ?: LOGGER.exitError { "Failed to load image: $path" }
+            stbi_set_flip_vertically_on_load(false)
 
             return ImageData(
                 pWidth.get(),

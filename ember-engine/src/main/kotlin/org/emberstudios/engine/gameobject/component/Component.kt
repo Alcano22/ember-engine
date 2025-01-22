@@ -10,5 +10,6 @@ abstract class Component {
 	open fun init() {}
 	open fun update(deltaTime: Float) {}
 	open fun render() {}
+	open fun cleanup() {}
 
 }

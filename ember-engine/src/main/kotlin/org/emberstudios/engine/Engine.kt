@@ -1,6 +1,5 @@
 package org.emberstudios.engine
 
-import imgui.ImGui
 import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.core.renderer.GraphicsAPIType
@@ -14,7 +13,6 @@ import org.emberstudios.renderer.Renderer
 import org.emberstudios.window.InputHandler
 import org.emberstudios.window.Window
 import org.emberstudios.core.window.WindowAPIType
-import org.emberstudios.engine.layer.Layer
 
 object Engine {
 

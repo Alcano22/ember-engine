@@ -1,0 +1,3 @@
+<fontcfg name="Baban" size="16" texture="baban.png" yPadding="1">
+    <char char="a" width="3" x="0"  />
+</fontcfg>

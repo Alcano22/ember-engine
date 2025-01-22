@@ -5,11 +5,13 @@ import imgui.flag.ImGuiDockNodeFlags
 import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.editor.EditorWindow
+import org.emberstudios.engine.editor.HierarchyWindow
 import org.emberstudios.engine.editor.InspectorWindow
 import org.emberstudios.engine.editor.ViewportWindow
 import org.emberstudios.engine.gameobject.GameObject
 import org.emberstudios.engine.gameobject.component.SpriteRenderer
 import org.emberstudios.engine.gameobject.component.TestComponent
+import org.emberstudios.engine.scene.SceneManager
 import org.emberstudios.renderer.*
 
 class EditorLayer : Layer {
@@ -24,11 +26,13 @@ class EditorLayer : Layer {
 		private val LOGGER = getLogger<EditorLayer>()
 	}
 
-	private val gameObjects = mutableListOf<GameObject>()
+	private val sceneManager = SceneManager()
 	private val editorWindows = mutableListOf<EditorWindow>()
 
 	private lateinit var camera: Camera
 	private lateinit var framebuffer: Framebuffer
+
+	private lateinit var spritesheet: SpriteSheet
 
 	var runtimeState = RuntimeState.EDITOR
 		set(value) {
@@ -44,28 +48,31 @@ class EditorLayer : Layer {
 		framebuffer = Framebuffer.create(Framebuffer.Specs(1, 1))
 
 		editorWindows += ViewportWindow(framebuffer, this, true)
-		editorWindows += InspectorWindow(camera, true)
+		val inspectorWindow = InspectorWindow(camera, true)
+		editorWindows += inspectorWindow
+		editorWindows += HierarchyWindow(inspectorWindow, sceneManager, true)
+
+		spritesheet = SpriteSheet("assets/textures/link.png", 3, 3)
 
 		initScene()
 		editorWindows.forEach { it.init() }
 	}
 
 	private fun initScene() {
-		gameObjects.clear()
-
-		gameObjects += GameObject("Player").apply {
+		sceneManager.newScene()
+		sceneManager.loadGameObject(GameObject("Player").apply {
 			addComponent<TestComponent>()
 			addComponent<SpriteRenderer> {
-				texture = ResourceManager.loadTexture("assets/textures/link.png")
+				texture = spritesheet[4, 2]
 			}
-		}
+		})
 
-		gameObjects.forEach { it.init() }
+		sceneManager.init()
 	}
 
 	override fun onUpdate(deltaTime: Float) {
 		if (runtimeState == RuntimeState.PLAYING)
-			gameObjects.forEach { it.update(deltaTime) }
+			sceneManager.update(deltaTime)
 
 		editorWindows.forEach { it.update(deltaTime) }
 	}
@@ -76,9 +83,7 @@ class EditorLayer : Layer {
 		Renderer.clear(.1f, .2f, .3f, 1f)
 
 		Renderer.beginScene(camera)
-
-		gameObjects.forEach { it.render() }
-
+		sceneManager.render()
 		Renderer.endScene()
 
 		framebuffer.unbind()
@@ -90,6 +95,10 @@ class EditorLayer : Layer {
 		editorWindows.forEach { it.render() }
 	}
 
-	override fun onWindowResize(width: Int, height: Int) = framebuffer.resize(width, height)
+	override fun onWindowResize(width: Int, height: Int) {
+		if (width == 0 || height == 0) return
+
+		framebuffer.resize(width, height)
+	}
 
 }

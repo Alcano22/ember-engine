@@ -39,8 +39,9 @@ class ImGuiLayer(
 				ImGuiConfigFlags.ViewportsEnable or
 				ImGuiConfigFlags.DpiEnableScaleFonts
 
-		io.fontGlobalScale = window.dpiScale
 		io.fonts.clear()
+
+		io.fontGlobalScale = window.dpiScale
 
 		val fontConfig = ImFontConfig().apply {
 			fontDataOwnedByAtlas = false

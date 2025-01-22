@@ -27,9 +27,18 @@ internal class GLFWWindow : Window {
 	override val nativeHandle get() = handle
 	override val dpiScale: Float
 		get() {
-			val scale = FloatArray(1)
-			glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), scale, FloatArray(1))
-			return scale[0]
+			val pWindowWidth = IntArray(1)
+			val pWindowHeight = IntArray(1)
+			val pFramebufferWidth = IntArray(1)
+			val pFramebufferHeight = IntArray(1)
+
+			glfwGetWindowSize(handle, pWindowWidth, pWindowHeight)
+			glfwGetFramebufferSize(handle, pFramebufferWidth, pFramebufferHeight)
+
+			val scaleX = pFramebufferWidth[0].toFloat() / pWindowWidth[0]
+			val scaleY = pFramebufferHeight[0].toFloat() / pWindowHeight[0]
+
+			return (scaleX + scaleY) / 2f
 		}
 	override val time get() = glfwGetTime().toFloat()
 

@@ -18,15 +18,17 @@ interface Texture : Resource {
         }
     }
 
+    var width: Int
+    var height: Int
+    var uv: FloatArray
+
+    fun subTexture(x: Int, y: Int, width: Int, height: Int): Texture
+
     fun bind()
     fun unbind()
 
     fun activate(slot: Int = 0)
     fun deactivate(slot: Int = 0)
-
-    fun getID(): Int
-    fun getWidth(): Int
-    fun getHeight(): Int
 
 }
 

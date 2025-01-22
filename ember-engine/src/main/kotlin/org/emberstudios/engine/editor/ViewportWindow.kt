@@ -54,7 +54,7 @@ class ViewportWindow(
 
 		ImGui.setCursorPosX(ImGui.getCursorPosX() + MENU_BAR_PADDING)
 
-		if (ImGui.menuItem(label, runtimeState == RuntimeState.PLAYING)) {
+		if (ImGui.menuItem(label, runtimeState == RuntimeState.PLAYING || runtimeState == RuntimeState.PAUSED)) {
 			runtimeState = when (runtimeState) {
 				RuntimeState.EDITOR -> RuntimeState.PLAYING
 				RuntimeState.PLAYING -> RuntimeState.EDITOR

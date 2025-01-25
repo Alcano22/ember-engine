@@ -1,25 +1,48 @@
 package org.emberstudios.engine.editor
 
 import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.spi.CallerData
 import imgui.ImGui
 import imgui.ImVec4
 import imgui.flag.ImGuiCol
+import imgui.flag.ImGuiMouseButton
 import imgui.flag.ImGuiSelectableFlags
 import imgui.flag.ImGuiTableFlags
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.util.ConsoleWindowLogAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
 
-data class ConsoleLogCall(val msg: String, val color: ImVec4) : Inspectable {
+data class ConsoleLogCall(
+	val msg: String,
+	val callerData: StackTraceElement,
+	val color: ImVec4,
+) : Inspectable {
+
+	companion object {
+		val LOGGER = getLogger<ConsoleLogCall>()
+	}
+
 	override fun inspect() {
-		ImGui.pushStyleColor(ImGuiCol.Text, color)
-		ImGui.textUnformatted(msg)
+		ImGui.text("Occured at ")
+
+		ImGui.sameLine()
+		ImGui.pushStyleColor(ImGuiCol.Text, 0f, .5f, 1f, 1f)
+		ImGui.text("${callerData.fileName}:${callerData.lineNumber}")
+		ImGui.popStyleColor()
+
+		ImGui.sameLine()
+		ImGui.text(" in ")
+
+		ImGui.sameLine()
+		ImGui.pushStyleColor(ImGuiCol.Text, .25f, .75f, 1f, 1f)
+		ImGui.text("${callerData.methodName}()")
 		ImGui.popStyleColor()
 	}
 }
 
-class ConsoleWindow(showing: Boolean = false) : EditorWindow("Console", showing) {
+class ConsoleWindow : EditorWindow("Console") {
 
 	companion object {
 		const val MAX_LOG_HISTORY = 5000

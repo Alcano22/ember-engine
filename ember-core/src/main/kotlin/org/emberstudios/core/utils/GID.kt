@@ -1,10 +1,11 @@
 package org.emberstudios.core.utils
 
+import kotlinx.serialization.Serializable
+import org.emberstudios.core.serialization.GIDSerializer
 import java.util.UUID
 
-class GID {
-    val value = UUID.randomUUID().toString()
-
+@Serializable(with = GIDSerializer::class)
+class GID(val value: String = UUID.randomUUID().toString()) {
     override fun equals(other: Any?) =
         other is GID &&
         value == other.value

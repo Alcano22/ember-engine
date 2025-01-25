@@ -1,8 +1,18 @@
 package org.emberstudios.engine.scene
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import org.emberstudios.core.utils.GID
 import org.emberstudios.engine.gameobject.GameObject
+import org.emberstudios.engine.serialization.jsonFormat
+import java.io.File
 
+@Serializable
 class Scene {
+
+    companion object {
+        fun loadFromFile(file: File) = jsonFormat.decodeFromString(serializer(), file.readText())
+    }
 
     private val _gameObjects = mutableListOf<GameObject>()
 
@@ -12,6 +22,8 @@ class Scene {
     fun update(deltaTime: Float) = _gameObjects.forEach { it.update(deltaTime) }
     fun render() = _gameObjects.forEach { it.render() }
     fun clear() = _gameObjects.clear()
+
+    fun findGameObject(gid: GID) = _gameObjects.first { it.gid == gid }
 
     fun loadGameObject(gameObject: GameObject): GameObject {
         _gameObjects += gameObject
@@ -23,5 +35,7 @@ class Scene {
         _gameObjects -= gameObject
         gameObject.cleanup()
     }
+
+    fun saveToFile(file: File) = file.writeText(jsonFormat.encodeToString(serializer(), this))
 
 }

@@ -7,7 +7,7 @@ import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.editor.*
 import org.emberstudios.engine.gameobject.GameObject
 import org.emberstudios.engine.gameobject.component.SpriteRenderer
-import org.emberstudios.engine.gameobject.component.TestComponent
+import org.emberstudios.engine.gameobject.component.PlayerMove
 import org.emberstudios.engine.scene.SceneManager
 import org.emberstudios.renderer.*
 
@@ -20,16 +20,16 @@ class EditorLayer : Layer {
 	}
 
 	companion object {
+		const val SCENE_FILEPATH = "assets\\scenes\\main.emsc"
+
 		private val LOGGER = getLogger<EditorLayer>()
 	}
 
 	private val sceneManager = SceneManager()
-	private val editorWindows = mutableListOf<EditorWindow>()
+	private val editorContext = EditorContext()
 
 	private lateinit var camera: Camera
 	private lateinit var framebuffer: Framebuffer
-
-	private lateinit var spritesheet: SpriteSheet
 
 	var runtimeState = RuntimeState.EDITOR
 		set(value) {
@@ -44,41 +44,34 @@ class EditorLayer : Layer {
 
 		framebuffer = Framebuffer.create(Framebuffer.Specs(1, 1))
 
-		editorWindows += ConsoleWindow(true)
-		editorWindows += ViewportWindow(framebuffer, this, true)
-		val inspectorWindow = InspectorWindow(true)
-		editorWindows += inspectorWindow
-		editorWindows += HierarchyWindow(sceneManager, true)
-
-		spritesheet = SpriteSheet("assets/textures/link.png", 3, 3)
+		editorContext.registerWindow(ConsoleWindow(), true)
+		editorContext.registerWindow(ViewportWindow(framebuffer, this), true)
+		editorContext.registerWindow(InspectorWindow(), true)
+		editorContext.registerWindow(HierarchyWindow(sceneManager), true)
+		editorContext.registerWindow(FileExplorerWindow("assets"), true)
+		editorContext.registerWindow(TextEditorWindow(), false)
 
 		initScene()
-		editorWindows.forEach { it.init() }
-
-		LOGGER.trace { "TEST TRACE" }
-		LOGGER.debug { "TEST DEBUG" }
-		LOGGER.info { "TEST INFO" }
-		LOGGER.warn { "TEST WARN" }
-		LOGGER.error { "TEST ERROR" }
+		editorContext.init()
 	}
 
-	private fun initScene() {
-		sceneManager.newScene()
-		sceneManager.loadGameObject(GameObject("Player").apply {
-			addComponent<TestComponent>()
-			addComponent<SpriteRenderer> {
-				texture = ResourceManager.loadTexture("assets/textures/link.png")
-			}
-		})
+	fun saveScene() = sceneManager.saveSceneToFile(SCENE_FILEPATH)
+	fun reloadScene() = initScene()
 
+	private fun initScene() {
+		sceneManager.loadSceneFromFile(SCENE_FILEPATH)
 		sceneManager.init()
+	}
+
+	override fun onDetach() {
+		sceneManager.saveSceneToFile(SCENE_FILEPATH)
 	}
 
 	override fun onUpdate(deltaTime: Float) {
 		if (runtimeState == RuntimeState.PLAYING)
 			sceneManager.update(deltaTime)
 
-		editorWindows.forEach { it.update(deltaTime) }
+		editorContext.update(deltaTime)
 	}
 
 	override fun onRender() {
@@ -96,7 +89,7 @@ class EditorLayer : Layer {
 	override fun onRenderImGui() {
 		ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode)
 
-		editorWindows.forEach { it.render() }
+		editorContext.render()
 	}
 
 	override fun onWindowResize(width: Int, height: Int) {

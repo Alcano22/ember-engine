@@ -2,32 +2,56 @@ package org.emberstudios.engine.editor
 
 import imgui.ImGui
 import imgui.flag.ImGuiWindowFlags
+import imgui.type.ImBoolean
 import kotlin.reflect.full.declaredFunctions
 
 abstract class EditorWindow(
 	val name: String,
-	var showing: Boolean = false,
+	var closeable: Boolean = false,
 	var flags: Int = 0,
 ) {
 
-	fun render() {
-		if (!showing) return
+	private var hasFocus = false
 
+	fun render() {
 		val hasMenuBar = hasMenuBar()
 
 		val flags = if (hasMenuBar) ImGuiWindowFlags.MenuBar or flags else flags
-		ImGui.begin(name, flags)
 
-		if (hasMenuBar) {
-			ImGui.beginMenuBar()
-			renderMenuBar()
-			ImGui.endMenuBar()
+		if (hasFocus) {
+			ImGui.setNextWindowFocus()
+			hasFocus = false
 		}
 
-		renderContent()
+		if (closeable) {
+			val imOpen = ImBoolean(EditorContext.isShown(this))
+			if (ImGui.begin(name, imOpen, flags)) {
+				EditorContext.setShown(this, imOpen.get())
+
+				if (hasMenuBar) {
+					ImGui.beginMenuBar()
+					renderMenuBar()
+					ImGui.endMenuBar()
+				}
+
+				renderContent()
+			}
+		} else {
+			if (ImGui.begin(name, flags)) {
+				if (hasMenuBar) {
+					ImGui.beginMenuBar()
+					renderMenuBar()
+					ImGui.endMenuBar()
+				}
+
+				renderContent()
+			}
+		}
 
 		ImGui.end()
 	}
+
+	fun requestFocus() { hasFocus = true }
 
 	open fun init() {}
 	open fun update(deltaTime: Float) {}

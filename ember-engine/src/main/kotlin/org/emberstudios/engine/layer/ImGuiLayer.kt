@@ -4,13 +4,13 @@ import imgui.ImFontConfig
 import imgui.ImGui
 import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiConfigFlags
+import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.editor.renderer.ImGuiRenderer
 import org.emberstudios.engine.Engine
 import org.emberstudios.renderer.RenderContext
 import org.emberstudios.renderer.Renderer
 import org.emberstudios.window.Window
-import org.emberstudios.window.glfw.GLFWContext
 
 class ImGuiLayer(
 	private val window: Window,
@@ -48,7 +48,9 @@ class ImGuiLayer(
 			oversampleH = 2
 			oversampleV = 2
 		}
-		io.fonts.addFontFromFileTTF("assets/fonts/Inter_28pt-Regular.ttf", 20f, fontConfig)
+
+		val fontData = ResourceManager.loadBinaryFile("fonts/IBMPlexSans-Regular.ttf")
+		io.fonts.addFontFromMemoryTTF(fontData, 18f, fontConfig)
 
 		ImGui.styleColorsDark()
 

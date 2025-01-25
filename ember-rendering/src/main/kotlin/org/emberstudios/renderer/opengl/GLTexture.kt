@@ -3,14 +3,14 @@ package org.emberstudios.renderer.opengl
 import org.emberstudios.core.io.ImageLoader
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.renderer.Texture
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL45.*
 
 internal class GLTexture private constructor(
-    val texID: Int,
+    override val texID: Int,
     width: Int,
     height: Int,
-    uv: FloatArray = floatArrayOf(0f, 0f, 1f, 1f)
+    uv: FloatArray = floatArrayOf(0f, 0f, 1f, 1f),
+    override val filepath: String
 ) : Texture {
 
     override var width: Int
@@ -28,7 +28,7 @@ internal class GLTexture private constructor(
     }
 
     constructor(filepath: String)
-            : this(glCreateTextures(GL_TEXTURE_2D), 0, 0, floatArrayOf(0f, 0f, 1f, 1f)) {
+            : this(glCreateTextures(GL_TEXTURE_2D), 0, 0, floatArrayOf(0f, 0f, 1f, 1f), filepath) {
         val image = ImageLoader.load(filepath)
 
         bind()
@@ -75,7 +75,7 @@ internal class GLTexture private constructor(
         val v1 = (this.height - y).toFloat() / this.height
         val uvCoords = floatArrayOf(u0, v0, u1, v1)
 
-        return GLTexture(texID, width, height, uvCoords)
+        return GLTexture(texID, width, height, uvCoords, "subtex($filepath)")
     }
 
     override fun bind() = glBindTexture(GL_TEXTURE_2D, texID)

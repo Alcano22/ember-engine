@@ -4,8 +4,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.emberstudios.core.io.Resource
 import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.exitError
+import org.emberstudios.core.logger.getLogger
 import org.emberstudios.core.renderer.GraphicsAPIType
 import org.emberstudios.renderer.opengl.GLTexture
+import java.io.File
 
 interface Texture : Resource {
 
@@ -18,9 +20,11 @@ interface Texture : Resource {
         }
     }
 
+    val texID: Int
     var width: Int
     var height: Int
     var uv: FloatArray
+    val filepath: String
 
     fun subTexture(x: Int, y: Int, width: Int, height: Int): Texture
 
@@ -32,4 +36,14 @@ interface Texture : Resource {
 
 }
 
-fun ResourceManager.loadTexture(path: String) = load(path) { Texture.create(it) }
+fun ResourceManager.loadTexture(filepath: String): Texture {
+    val (texture, cached) = load(filepath) {
+        if (exists(it))
+            Texture.create(it)
+        else
+            ResourceManager.loadTexture("textures/unknown.jpg")
+    }
+    if (!cached)
+        getLogger<ResourceManager>().trace { "Loaded texture: '$filepath'" }
+    return texture
+}

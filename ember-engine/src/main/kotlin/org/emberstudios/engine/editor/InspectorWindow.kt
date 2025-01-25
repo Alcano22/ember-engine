@@ -6,7 +6,7 @@ interface Inspectable {
 	fun inspect()
 }
 
-class InspectorWindow(showing: Boolean = false) : EditorWindow("Inspector", showing) {
+class InspectorWindow : EditorWindow("Inspector") {
 
 	companion object {
 		val LOGGER = getLogger<InspectorWindow>()

@@ -7,9 +7,8 @@ import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.scene.SceneManager
 
 class HierarchyWindow(
-    private val sceneManager: SceneManager,
-    showing: Boolean = false
-) : EditorWindow("Scene Hierarchy", showing) {
+    private val sceneManager: SceneManager
+) : EditorWindow("Scene Hierarchy") {
 
     private val gameObjects get() = sceneManager.currentScene?.gameObjects ?: emptyList()
 

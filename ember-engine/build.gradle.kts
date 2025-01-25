@@ -5,6 +5,8 @@ plugins {
 
 	// Apply the Application plugin to add support for building an executable JVM application.
 	application
+
+	kotlin("plugin.serialization") version "1.9.0"
 }
 
 dependencies {
@@ -14,10 +16,17 @@ dependencies {
 	implementation(project(":ember-editor"))
 	implementation(project(":ember-rendering"))
 	implementation(project(":ember-windowing"))
+
+	implementation("io.github.classgraph:classgraph:4.8.149")
+
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
 }
 
 application {
 	// Define the Fully Qualified Name for the application main class
 	// (Note that Kotlin compiles `App.kt` to a class with FQN `com.example.app.AppKt`.)
 	mainClass = "org.emberstudios.engine.EngineKt"
+
+	applicationDefaultJvmArgs = listOf("-Dproject.root=${project.rootDir.absolutePath}")
 }

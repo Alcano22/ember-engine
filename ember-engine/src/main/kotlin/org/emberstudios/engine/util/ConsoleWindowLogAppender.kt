@@ -31,7 +31,11 @@ class ConsoleWindowLogAppender : AppenderBase<ILoggingEvent>() {
 
 	override fun append(event: ILoggingEvent) = callbacks.forEach {
 		val formattedMsg = layout!!.doLayout(event)
-		it(ConsoleLogCall(formattedMsg, LEVEL_TO_COLOR[event.level]!!))
+		it(ConsoleLogCall(
+			formattedMsg,
+			event.callerData.first(),
+			LEVEL_TO_COLOR[event.level]!!
+		))
 	}
 
 	fun setLayout(layout: Layout<ILoggingEvent>) { this.layout = layout }

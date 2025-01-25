@@ -1,0 +1,25 @@
+{
+    "_gameObjects": [
+        {
+            "name": "Player",
+            "gid": "733fb33c-a508-46f6-9389-af3be88d4fc1",
+            "components": [
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.Transform",
+                    "position": {
+                        "x": 0.09,
+                        "y": 0.0
+                    }
+                },
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.PlayerMove",
+                    "speed": 50.0
+                },
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.SpriteRenderer",
+                    "texture": "assets\\textures\\link.png"
+                }
+            ]
+        }
+    ]
+}

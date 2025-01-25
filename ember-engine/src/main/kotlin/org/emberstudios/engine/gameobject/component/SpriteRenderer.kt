@@ -1,9 +1,13 @@
 package org.emberstudios.engine.gameobject.component
 
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.emberstudios.core.io.ResourceManager
+import org.emberstudios.engine.util.Color
 import org.emberstudios.renderer.*
-import org.joml.Vector4f
 
+@Serializable
 class SpriteRenderer : Component() {
 
 	companion object {
@@ -13,15 +17,14 @@ class SpriteRenderer : Component() {
 		)
 	}
 
-	var texture: Texture? = null
-	var color = Vector4f(1f)
+	@Contextual var texture: Texture? = null
+	var color = Color.WHITE
 
-	private lateinit var shader: Shader
-
-	private lateinit var vao: VertexArray
+	@Transient private lateinit var shader: Shader
+	@Transient private lateinit var vao: VertexArray
 
 	override fun init() {
-		shader = ResourceManager.loadShader("assets/shaders/default.glsl")
+		shader = ResourceManager.loadShader("assets\\shaders\\default.glsl")
 		shader.compile()
 
 		vao = VertexArray.create()

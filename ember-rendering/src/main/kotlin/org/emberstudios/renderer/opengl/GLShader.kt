@@ -1,5 +1,6 @@
 package org.emberstudios.renderer.opengl
 
+import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.core.math.toArray
@@ -32,12 +33,11 @@ internal class GLShader : Shader {
 
 	constructor(filepath: String) {
 		this.filepath = filepath
+		loadFromFile()
+	}
 
-		val file = File(filepath)
-		if (!file.exists())
-			LOGGER.exitError { "File not found: '$filepath'" }
-
-		val src = file.readText()
+	override fun loadFromFile() {
+		val src = File(filepath).readText()
 
 		val splitSrc = src.split(Regex("($TYPE_PREFIX)( )+([a-zA-Z]+)"))
 
@@ -81,6 +81,12 @@ internal class GLShader : Shader {
 		glDeleteShader(fragmentShader)
 
 		compiled = true
+	}
+
+	override fun reload() {
+		ResourceManager.clearCache(filepath)
+		loadFromFile()
+		compile()
 	}
 
 	private fun compileShader(src: String, type: Int): Int {

@@ -24,7 +24,7 @@
 
     <appender name="EDITOR_CONSOLE" class="org.emberstudios.engine.util.ConsoleWindowLogAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>[%d{HH:mm:ss}][%thread][%level][%class{0}.%method\(%file:%line\)] \(%logger{36}\) %msg%n</pattern>
+            <pattern>[%d{HH:mm:ss}][%thread] \(%logger{36}\) %msg%n</pattern>
         </layout>
     </appender>
 

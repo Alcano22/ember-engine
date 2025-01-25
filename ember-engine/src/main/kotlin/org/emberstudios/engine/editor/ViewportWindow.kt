@@ -17,9 +17,8 @@ import kotlin.math.round
 
 class ViewportWindow(
 	private val framebuffer: Framebuffer,
-	private val editorLayer: EditorLayer,
-	showing: Boolean = false,
-) : EditorWindow("Viewport", showing) {
+	private val editorLayer: EditorLayer
+) : EditorWindow("Viewport") {
 
 	companion object {
 		const val MENU_BAR_PADDING = 25f
@@ -60,6 +59,9 @@ class ViewportWindow(
 				RuntimeState.PLAYING -> RuntimeState.EDITOR
 				RuntimeState.PAUSED -> RuntimeState.EDITOR
 			}
+
+			if (runtimeState == RuntimeState.EDITOR) editorLayer.reloadScene()
+			if (runtimeState == RuntimeState.PLAYING) editorLayer.saveScene()
 		}
 
 		if (ImGui.menuItem("Pause", runtimeState == RuntimeState.PAUSED, runtimeState != RuntimeState.EDITOR)) {

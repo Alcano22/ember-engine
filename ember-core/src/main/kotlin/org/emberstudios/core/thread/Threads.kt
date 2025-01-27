@@ -1,6 +1,8 @@
 package org.emberstudios.core.thread
 
-import org.emberstudios.core.logger.CORE_LOGGER
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val LOGGER = KotlinLogging.logger("ThreadManager")
 
 fun createThread(
 	name: String,
@@ -11,12 +13,12 @@ fun createThread(
 ): Thread {
 	val thread = Thread {
 		try {
-			CORE_LOGGER.info { "Thread [$name] started." }
+			LOGGER.trace { "Thread [$name] started." }
 			action()
 		} catch (e: Exception) {
-			CORE_LOGGER.error { "Thread [$name] encountered an error: ${e.message}" }
+			LOGGER.error { "Thread [$name] encountered an error: ${e.message}" }
 		} finally {
-			CORE_LOGGER.info { "Thread [$name] finished" }
+			LOGGER.trace { "Thread [$name] finished" }
 		}
 	}
 

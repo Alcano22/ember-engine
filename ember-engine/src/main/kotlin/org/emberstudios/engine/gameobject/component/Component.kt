@@ -20,4 +20,10 @@ sealed class Component {
 	open fun update(deltaTime: Float) {}
 	open fun render() {}
 	open fun cleanup() {}
+
+	protected inline fun <reified T : Component> getComponents() = gameObject.getComponents<T>()
+	protected inline fun <reified T : Component> getComponent() = gameObject.getComponent<T>()
+
+	protected inline fun <reified T : Component> removeComponents() = gameObject.removeComponents<T>()
+	protected inline fun <reified T : Component> removeComponent() = gameObject.removeComponent<T>()
 }

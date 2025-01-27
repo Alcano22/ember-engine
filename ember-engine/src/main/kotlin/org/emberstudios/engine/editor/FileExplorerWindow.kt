@@ -1,9 +1,14 @@
 package org.emberstudios.engine.editor
 
 import imgui.ImGui
+import imgui.flag.ImGuiSelectableFlags
 import imgui.flag.ImGuiStyleVar
+import imgui.flag.ImGuiWindowFlags
 import imgui.type.ImString
 import org.emberstudios.core.io.ResourceManager
+import org.emberstudios.core.logger.getLogger
+import org.emberstudios.input.Input
+import org.emberstudios.input.KeyCode
 import org.emberstudios.renderer.loadTexture
 import java.awt.Desktop
 import java.io.File
@@ -13,11 +18,13 @@ class FileExplorerWindow(
 ) : EditorWindow("File Explorer") {
 
     companion object {
-        const val THUMBNAIL_SIZE_STEP = 32f
-        const val PADDING = 10f
+        private const val THUMBNAIL_SIZE_STEP = 32f
+        private const val PADDING = 10f
 
-        val FILE_ICON = ResourceManager.loadTexture("textures\\file_icon.png")
-        val FOLDER_ICON = ResourceManager.loadTexture("textures\\folder_icon.png")
+        private val FILE_ICON = ResourceManager.loadTexture("textures\\file_icon.png")
+        private val FOLDER_ICON = ResourceManager.loadTexture("textures\\folder_icon.png")
+
+        private val LOGGER = getLogger<FileExplorerWindow>()
     }
 
     private lateinit var currentPath: String
@@ -26,6 +33,8 @@ class FileExplorerWindow(
 
     private var thumbnailSize = 128f
     private val searchQuery = ImString(256)
+
+    private var selectedFile: File? = null
 
     init {
         loadPath(rootPath)
@@ -39,6 +48,8 @@ class FileExplorerWindow(
             ?.filter { it.path != currentPath }
             ?.forEach { files += it }
     }
+
+    private fun reload() { loadPath(currentPath) }
 
     override fun renderContent() {
         val buttonSize = 32f
@@ -81,13 +92,23 @@ class FileExplorerWindow(
             if (index % itemsPerRow != 0)
                 ImGui.sameLine()
 
+            val selected = selectedFile == file
+
+            val groupWidth = thumbnailSize
+            val groupHeight = thumbnailSize + ImGui.getTextLineHeightWithSpacing()
+
             ImGui.beginGroup()
+
+            if (ImGui.selectable("##${file.path}", selected,
+                    ImGuiSelectableFlags.None, groupWidth, groupHeight))
+                selectedFile = file
 
             val icon = if (file.isDirectory) FOLDER_ICON else when (file.extension) {
                 "png" -> ResourceManager.loadTexture(file.path)
                 else -> FILE_ICON
             }
 
+            ImGui.setCursorPosY(ImGui.getCursorPosY() - groupHeight)
             ImGui.image(icon.texID.toLong(), thumbnailSize, thumbnailSize, 0f, 1f, 1f, 0f)
 
             val textWidth = ImGui.calcTextSizeX(file.name)
@@ -108,6 +129,11 @@ class FileExplorerWindow(
         }
 
         ImGui.popStyleVar()
+
+        if (ImGui.isKeyPressed(KeyCode.DELETE) && selectedFile != null) {
+            selectedFile!!.delete()
+            reload()
+        }
     }
 
     private fun openFile(file: File) {

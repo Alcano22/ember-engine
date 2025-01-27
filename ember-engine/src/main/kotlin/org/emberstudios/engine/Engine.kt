@@ -10,9 +10,11 @@ import org.emberstudios.engine.util.Time
 import org.emberstudios.input.Input
 import org.emberstudios.renderer.RenderContext
 import org.emberstudios.renderer.Renderer
-import org.emberstudios.window.InputHandler
 import org.emberstudios.window.Window
 import org.emberstudios.core.window.WindowAPIType
+import org.emberstudios.engine.event.AppQuitEvent
+import org.emberstudios.engine.event.EventBus
+import org.emberstudios.engine.event.WindowResizeEvent
 
 object Engine {
 
@@ -22,7 +24,6 @@ object Engine {
 		private set
 
 	private lateinit var renderContext: RenderContext
-	private lateinit var inputHandler: InputHandler
 
 	private lateinit var layerStack: LayerStack
 	private lateinit var imGuiLayer: ImGuiLayer
@@ -30,6 +31,9 @@ object Engine {
 	fun run() {
 		init()
 		loop()
+
+		EventBus.dispatch(AppQuitEvent())
+
 		cleanup()
 	}
 
@@ -50,15 +54,17 @@ object Engine {
 
 		layerStack = LayerStack()
 
-		window.setResizeCallback { width, height -> layerStack.onWindowResize(width, height) }
-
-		inputHandler = InputHandler.create(Input)
-		inputHandler.init(window.nativeHandle)
+		window.setResizeCallback { width, height ->
+			layerStack.onWindowResize(width, height)
+			EventBus.dispatch(WindowResizeEvent(width, height))
+		}
 
 		layerStack.pushLayer(EditorLayer())
 
 		imGuiLayer = ImGuiLayer(window, renderContext)
 		layerStack.pushOverlay(imGuiLayer)
+
+		EventBus.initializeAsync()
 	}
 
 	private fun loop() {

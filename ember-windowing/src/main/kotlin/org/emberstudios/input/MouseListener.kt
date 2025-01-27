@@ -1,11 +1,11 @@
 package org.emberstudios.input
 
-import org.emberstudios.core.input.InputAction
-import org.emberstudios.core.input.MouseCallback
 import org.emberstudios.core.logger.getLogger
 import org.joml.Vector2f
+import org.lwjgl.glfw.GLFW.GLFW_PRESS
+import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 
-class MouseListener : MouseCallback {
+internal class MouseListener {
 
 	companion object {
 		const val NUM_BUTTONS = 5
@@ -38,19 +38,19 @@ class MouseListener : MouseCallback {
 		}
 	}
 
-	override fun onMouseButton(button: Int, action: InputAction) {
+	fun onMouseButton(button: Int, action: Int) {
 		if (button >= NUM_BUTTONS) return
 
 		when (action) {
-			InputAction.PRESS -> pressedButtons[button] = true
-			InputAction.RELEASE -> {
+			GLFW_PRESS -> pressedButtons[button] = true
+			GLFW_RELEASE -> {
 				pressedButtons[button] = false
 				dragging = false
 			}
 		}
 	}
 
-	override fun onMouseMove(x: Float, y: Float) {
+	fun onMouseMove(x: Float, y: Float) {
 		lastPosition.set(x, y)
 		position.set(x, y)
 
@@ -60,7 +60,7 @@ class MouseListener : MouseCallback {
 		}
 	}
 
-	override fun onScroll(offsetX: Float, offsetY: Float) {
+	fun onScroll(offsetX: Float, offsetY: Float) {
 		scrollDelta.set(offsetX, offsetY)
 	}
 

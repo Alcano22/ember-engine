@@ -1,5 +1,6 @@
 package org.emberstudios.engine.editor
 
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.CallerData
 import imgui.ImGui
@@ -8,6 +9,7 @@ import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiMouseButton
 import imgui.flag.ImGuiSelectableFlags
 import imgui.flag.ImGuiTableFlags
+import imgui.type.ImBoolean
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.util.ConsoleWindowLogAppender
 import org.slf4j.Logger
@@ -52,6 +54,13 @@ class ConsoleWindow : EditorWindow("Console") {
 
 	private val logAppender: ConsoleWindowLogAppender?
 	private val logCalls = mutableListOf<ConsoleLogCall>()
+	private val logFilter = mutableMapOf(
+		Level.TRACE to false,
+		Level.DEBUG to false,
+		Level.INFO	to false,
+		Level.WARN	to false,
+		Level.ERROR	to false
+	)
 
 	private var selectedIndex = -1
 
@@ -77,6 +86,16 @@ class ConsoleWindow : EditorWindow("Console") {
 	}
 
 	override fun renderContent() {
+		for (level in logFilter.keys) {
+			val imBool = ImBoolean(logFilter[level]!!)
+			if (ImGui.checkbox(level.levelStr, imBool))
+				logFilter[level] = imBool.get()
+			if (logFilter.keys.indexOf(level) != logFilter.keys.size - 1)
+				ImGui.sameLine()
+		}
+
+		ImGui.separator()
+
 		if (logAppender == null)
 			return
 

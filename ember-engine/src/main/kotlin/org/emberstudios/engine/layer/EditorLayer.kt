@@ -2,12 +2,8 @@ package org.emberstudios.engine.layer
 
 import imgui.ImGui
 import imgui.flag.ImGuiDockNodeFlags
-import org.emberstudios.core.io.ResourceManager
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.editor.*
-import org.emberstudios.engine.gameobject.GameObject
-import org.emberstudios.engine.gameobject.component.SpriteRenderer
-import org.emberstudios.engine.gameobject.component.PlayerMove
 import org.emberstudios.engine.scene.SceneManager
 import org.emberstudios.renderer.*
 
@@ -47,7 +43,7 @@ class EditorLayer : Layer {
 		editorContext.registerWindow(ConsoleWindow(), true)
 		editorContext.registerWindow(ViewportWindow(framebuffer, this), true)
 		editorContext.registerWindow(InspectorWindow(), true)
-		editorContext.registerWindow(HierarchyWindow(sceneManager), true)
+		editorContext.registerWindow(SceneHierarchyWindow(sceneManager), true)
 		editorContext.registerWindow(FileExplorerWindow("assets"), true)
 		editorContext.registerWindow(TextEditorWindow(), false)
 

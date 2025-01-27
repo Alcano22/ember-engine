@@ -1,23 +1,28 @@
 package org.emberstudios.input
 
-import org.emberstudios.core.input.InputManager
 import org.joml.Vector2f
 import org.joml.minus
 
-object Input : InputManager {
+object Input {
 
 	enum class Axis {
 		HORIZONTAL,
 		VERTICAL
 	}
 
-	private val keyboard = KeyboardListener()
-	private val mouse = MouseListener()
+	internal val keyboard = KeyboardListener()
+	internal val mouse = MouseListener()
+	internal val controller = ControllerListener()
 
 	val mousePosition get() = mouse.position
 	val mouseLastPosition get() = mouse.lastPosition
 	val mouseDelta get() = mousePosition - mouseLastPosition
 	val mouseScrollDelta get() = if (blockMouse) Vector2f() else mouse.scrollDelta
+
+	val controllerLeftStick get() = controller.leftStick
+	val controllerRightStick get() = controller.rightStick
+	val controllerLeftTrigger get() = controller.leftTrigger
+	val controllerRightTrigger get() = controller.rightTrigger
 
 	var blockingCallback: () -> Pair<Boolean, Boolean> = { false to false }
 	var mouseViewportPosition = Vector2f(-1f, -1f)
@@ -28,6 +33,7 @@ object Input : InputManager {
 	fun endFrame() {
 		keyboard.endFrame()
 		mouse.endFrame()
+		controller.endFrame()
 	}
 
 	// Keyboard
@@ -69,7 +75,12 @@ object Input : InputManager {
 	fun getMouseButtonDown(button: Int) = mouse.getButtonDown(button) && !blockMouse
 	fun getMouseButtonUp(button: Int) = mouse.getButtonUp(button) && !blockMouse
 
-	override fun getKeyboardCallback() = keyboard
-	override fun getMouseCallback() = mouse
+	// Controller
+	fun getControllerButton(button: Int) = controller.getButton(button)
+	fun getControllerButtonDown(button: Int) = controller.getButtonDown(button)
+	fun getControllerButtonUp(button: Int) = controller.getButtonUp(button)
+
+	fun setControllerVibration(leftMotor: Float, rightMotor: Float) =
+		controller.setVibration(leftMotor, rightMotor)
 
 }

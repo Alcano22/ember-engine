@@ -1,10 +1,9 @@
 package org.emberstudios.input
 
-import org.emberstudios.core.input.InputAction
-import org.emberstudios.core.input.KeyboardCallback
 import org.emberstudios.core.logger.getLogger
+import org.lwjgl.glfw.GLFW.*
 
-class KeyboardListener : KeyboardCallback {
+internal class KeyboardListener {
 
 	companion object {
 		const val NUM_KEYS = 350
@@ -25,9 +24,13 @@ class KeyboardListener : KeyboardCallback {
 		}
 	}
 
-	override fun onKey(key: Int, action: InputAction) = when (action) {
-		InputAction.PRESS -> pressedKeys[key] = true
-		InputAction.RELEASE -> pressedKeys[key] = false
+	fun onKey(key: Int, action: Int) {
+		if (key >= NUM_KEYS) return
+
+		when (action) {
+			GLFW_PRESS -> pressedKeys[key] = true
+			GLFW_RELEASE -> pressedKeys[key] = false
+		}
 	}
 
 	fun getKey(key: Int): Boolean {

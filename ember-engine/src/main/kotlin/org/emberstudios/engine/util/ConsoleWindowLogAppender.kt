@@ -11,9 +11,9 @@ class ConsoleWindowLogAppender : AppenderBase<ILoggingEvent>() {
 
 	companion object {
 		val LEVEL_TO_COLOR = mapOf(
-			Level.TRACE to ImVec4(0.53f, 0.53f, 0.53f, 1.00f),
-			Level.DEBUG to ImVec4(0.13f, 0.67f, 1.00f, 1.00f),
-			Level.INFO  to ImVec4(0.00f, 0.87f, 0.33f, 1.00f),
+			Level.TRACE to ImVec4(0.85f, 0.85f, 0.85f, 1.00f),
+			Level.DEBUG  to ImVec4(0.00f, 0.87f, 0.33f, 1.00f),
+			Level.INFO to ImVec4(0.13f, 0.67f, 1.00f, 1.00f),
 			Level.WARN  to ImVec4(1.00f, 0.65f, 0.00f, 1.00f),
 			Level.ERROR to ImVec4(1.00f, 0.33f, 0.33f, 1.00f)
 		)

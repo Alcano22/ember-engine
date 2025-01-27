@@ -28,6 +28,8 @@ interface Window {
 	fun update()
 	fun destroy()
 
+	fun quit()
+
 	fun setResizeCallback(callback: (Int, Int) -> Unit)
 
 	fun createRenderContext(): RenderContext

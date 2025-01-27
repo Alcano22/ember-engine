@@ -12,7 +12,6 @@ plugins {
 dependencies {
 	// Project "engine" depends on project "utils". (Project paths are separated with ":", so ":utils" refers to the top-level "utils" project.)
 	implementation(project(":ember-core"))
-	implementation(project(":ember-input"))
 	implementation(project(":ember-editor"))
 	implementation(project(":ember-rendering"))
 	implementation(project(":ember-windowing"))
@@ -21,6 +20,10 @@ dependencies {
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
+
+	implementation("org.python:jython-standalone:2.7.2")
+
+	implementation("net.objecthunter:exp4j:0.4.8")
 }
 
 application {
@@ -28,5 +31,7 @@ application {
 	// (Note that Kotlin compiles `App.kt` to a class with FQN `com.example.app.AppKt`.)
 	mainClass = "org.emberstudios.engine.EngineKt"
 
-	applicationDefaultJvmArgs = listOf("-Dproject.root=${project.rootDir.absolutePath}")
+	applicationDefaultJvmArgs = listOf(
+		"-Dproject.root=${project.rootDir.absolutePath}"
+	)
 }

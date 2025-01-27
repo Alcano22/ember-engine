@@ -14,6 +14,13 @@ class Color(r: Float, g: Float, b: Float, a: Float = 1f) : Vector4f(r, g, b, a) 
         val GREEN       = Color(0f, 1f, 0f)
         val BLUE        = Color(0f, 0f, 1f)
         val TRANSPARENT = Color(0f, 0f, 0f, 0f)
+
+        val IM_WHITE        = WHITE.toImVec()
+        val IM_BLACK        = BLACK.toImVec()
+        val IM_RED          = RED.toImVec()
+        val IM_GREEN        = GREEN.toImVec()
+        val IM_BLUE         = BLUE.toImVec()
+        val IM_TRANSPARENT  = TRANSPARENT.toImVec()
     }
 
     var r: Float = r

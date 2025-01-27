@@ -31,4 +31,6 @@ class SpriteSheet(
             texture.subTexture(px, py, cellWidth, cellHeight)
         }
     }
+
+    fun getRange(x: Int, y: Int, count: Int) = Array<Texture>(count) { get(x + it, y)!! }
 }

@@ -2,17 +2,37 @@ package org.emberstudios.engine.editor
 
 import imgui.ImGui
 import imgui.flag.ImGuiTreeNodeFlags
-import imgui.flag.ImGuiWindowFlags
+import imgui.type.ImString
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.scene.SceneManager
 
-class HierarchyWindow(
+class SceneHierarchyWindow(
     private val sceneManager: SceneManager
 ) : EditorWindow("Scene Hierarchy") {
 
+    companion object {
+        private val LOGGER = getLogger<SceneHierarchyWindow>()
+    }
+
     private val gameObjects get() = sceneManager.currentScene?.gameObjects ?: emptyList()
+    private val searchQuery = ImString(64)
 
     override fun renderContent() {
+        ImGui.setNextItemWidth(ImGui.getContentRegionAvailX())
+        if (ImGui.inputTextWithHint("##Search", "Search...", searchQuery)) {
+            val input = searchQuery.get().trim()
+
+            if (input.matches(Regex("^[0-9+\\-*/().\\s]+$"))) {
+                try {
+
+                } catch (e: Exception) {
+                    LOGGER.error { e.message }
+                }
+            }
+        }
+
+        ImGui.separator()
+
         gameObjects.forEach {
             if (ImGui.treeNodeEx(
                     "${it.name}##${it.gid}",

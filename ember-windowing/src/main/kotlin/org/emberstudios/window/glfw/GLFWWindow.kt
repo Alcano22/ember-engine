@@ -3,6 +3,7 @@ package org.emberstudios.window.glfw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.emberstudios.core.WindowHandle
 import org.emberstudios.core.nullptr
+import org.emberstudios.input.Input
 import org.emberstudios.window.Window
 import org.joml.Vector2i
 import org.lwjgl.glfw.GLFW.*
@@ -59,6 +60,15 @@ internal class GLFWWindow : Window {
 			return false
 		}
 
+		glfwSetKeyCallback(handle) { _, key, _, action, _ ->
+			Input.keyboard.onKey(key, action) }
+		glfwSetMouseButtonCallback(handle) { _, button, action, _ ->
+			Input.mouse.onMouseButton(button, action) }
+		glfwSetCursorPosCallback(handle) { _, posX, posY ->
+			Input.mouse.onMouseMove(posX.toFloat(), posY.toFloat()) }
+		glfwSetScrollCallback(handle) { _, offsetX, offsetY ->
+			Input.mouse.onScroll(offsetX.toFloat(), offsetY.toFloat()) }
+
 		glfwSwapInterval(1)
 		glfwShowWindow(handle)
 
@@ -73,6 +83,8 @@ internal class GLFWWindow : Window {
 		glfwDestroyWindow(handle)
 		glfwTerminate()
 	}
+
+	override fun quit() = glfwSetWindowShouldClose(handle, true)
 
 	override fun setResizeCallback(callback: (Int, Int) -> Unit) {
 		glfwSetFramebufferSizeCallback(handle) { _, width, height -> callback(width, height)}

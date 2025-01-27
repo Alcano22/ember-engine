@@ -16,8 +16,9 @@ dependencies {
     implementation(project(":ember-rendering"))
 
     implementation(platform("org.lwjgl:lwjgl-bom:${Version.LWJGL}"))
-
     implementation("org.lwjgl", "lwjgl-glfw")
+
+    implementation("com.github.StrikerX3:JXInput:1.0.0")
 
     runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
 }

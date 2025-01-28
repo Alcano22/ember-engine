@@ -5,12 +5,11 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.CallerData
 import imgui.ImGui
 import imgui.ImVec4
-import imgui.flag.ImGuiCol
-import imgui.flag.ImGuiMouseButton
-import imgui.flag.ImGuiSelectableFlags
-import imgui.flag.ImGuiTableFlags
+import imgui.flag.*
 import imgui.type.ImBoolean
+import imgui.type.ImInt
 import org.emberstudios.core.logger.getLogger
+import org.emberstudios.engine.util.Color
 import org.emberstudios.engine.util.ConsoleWindowLogAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,11 +18,20 @@ import java.io.File
 data class ConsoleLogCall(
 	val msg: String,
 	val callerData: StackTraceElement,
-	val color: ImVec4,
+	val level: Level,
 ) : Inspectable {
 
 	companion object {
 		val LOGGER = getLogger<ConsoleLogCall>()
+	}
+
+	val color: ImVec4 get() = when (level) {
+		Level.TRACE -> ImVec4(0.85f, 0.85f, 0.85f, 1.00f)
+		Level.DEBUG -> ImVec4(0.00f, 0.87f, 0.33f, 1.00f)
+		Level.INFO 	-> ImVec4(0.13f, 0.67f, 1.00f, 1.00f)
+		Level.WARN  -> ImVec4(1.00f, 0.65f, 0.00f, 1.00f)
+		Level.ERROR -> ImVec4(1.00f, 0.33f, 0.33f, 1.00f)
+		else 		-> Color.IM_WHITE
 	}
 
 	override fun inspect() {
@@ -49,18 +57,14 @@ class ConsoleWindow : EditorWindow("Console") {
 	companion object {
 		const val MAX_LOG_HISTORY = 5000
 
-		val LOGGER = getLogger<ConsoleWindow>()
+		private val LOGGER = getLogger<ConsoleWindow>()
+		private val LOG_LEVELS = arrayOf("TRACE", "DEBUG", "INFO", "WARN", "ERROR")
+		private val LOG_LEVEL_VALUES = arrayOf(Level.TRACE, Level.DEBUG, Level.INFO, Level.WARN, Level.ERROR)
 	}
 
 	private val logAppender: ConsoleWindowLogAppender?
 	private val logCalls = mutableListOf<ConsoleLogCall>()
-	private val logFilter = mutableMapOf(
-		Level.TRACE to false,
-		Level.DEBUG to false,
-		Level.INFO	to false,
-		Level.WARN	to false,
-		Level.ERROR	to false
-	)
+	private var selectedLogLevel = ImInt(2)
 
 	private var selectedIndex = -1
 
@@ -76,6 +80,12 @@ class ConsoleWindow : EditorWindow("Console") {
 			LOGGER.exit { "Could not retrieve ConsoleWindow log appender" }
 			logAppender = null
 		}
+
+		LOGGER.trace { "TEST" }
+		LOGGER.debug { "TEST" }
+		LOGGER.info { "TEST" }
+		LOGGER.warn { "TEST" }
+		LOGGER.error { "TEST" }
 	}
 
 	private fun onLogCall(logCall: ConsoleLogCall) {
@@ -85,22 +95,23 @@ class ConsoleWindow : EditorWindow("Console") {
 		logCalls += logCall
 	}
 
+	override fun renderContextMenuPopup() {
+		if (ImGui.combo("Log Level", selectedLogLevel, LOG_LEVELS))
+			LOGGER.trace { "Log Level changed to: ${LOG_LEVELS[selectedLogLevel.get()]}" }
+
+		if (ImGui.button("Clear Console"))
+			logCalls.clear()
+	}
+
 	override fun renderContent() {
-		for (level in logFilter.keys) {
-			val imBool = ImBoolean(logFilter[level]!!)
-			if (ImGui.checkbox(level.levelStr, imBool))
-				logFilter[level] = imBool.get()
-			if (logFilter.keys.indexOf(level) != logFilter.keys.size - 1)
-				ImGui.sameLine()
-		}
-
-		ImGui.separator()
-
-		if (logAppender == null)
-			return
+		if (logAppender == null) return
 
 		if (ImGui.beginTable("LogTable", 1, ImGuiTableFlags.RowBg or ImGuiTableFlags.ScrollY)) {
+			val selectedLevel = LOG_LEVEL_VALUES[selectedLogLevel.get()]
+
 			for ((i, logCall) in logCalls.withIndex()) {
+				if (logCall.level.levelInt < selectedLevel.levelInt) continue
+
 				ImGui.tableNextRow()
 				ImGui.tableNextColumn()
 
@@ -115,6 +126,14 @@ class ConsoleWindow : EditorWindow("Console") {
 
 			ImGui.endTable()
 		}
+	}
+
+	override fun loadConfig() {
+		selectedLogLevel.set(loadConfigValue("log_level", 0))
+	}
+
+	override fun saveConfig() {
+		saveConfigValue("log_level", selectedLogLevel.get())
 	}
 
 }

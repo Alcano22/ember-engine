@@ -63,7 +63,9 @@ class ImGuiLayer(
 		renderer.setup()
 	}
 
-	override fun onDetach() = renderer.cleanup()
+	override fun onDetach() {
+		renderer.cleanup()
+	}
 
 	override fun onUpdate(deltaTime: Float) = renderer.update(deltaTime)
 

@@ -20,6 +20,8 @@ class EditorContext {
 
     init {
         instance = this
+
+        EditorConfig.loadConfig()
     }
 
     val windows = mutableMapOf<EditorWindow, Boolean>()
@@ -58,8 +60,15 @@ class EditorContext {
 
     fun isShown(window: EditorWindow) = windows[window] ?: false
 
-    fun init() = windows.keys.forEach { it.init() }
+    fun init() = windows.keys.forEach {
+        it.init()
+        it.loadConfig()
+    }
     fun update(deltaTime: Float) = windows.keys.forEach { it.update(deltaTime) }
     fun render() = windows.keys.filter { windows[it]!! }.forEach { it.render() }
+    fun saveConfig() {
+        windows.keys.forEach { it.saveConfig() }
+        EditorConfig.saveConfig()
+    }
 
 }

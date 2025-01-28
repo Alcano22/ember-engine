@@ -3,18 +3,20 @@ package org.emberstudios.engine.editor
 import imgui.ImGui
 import imgui.flag.ImGuiWindowFlags
 import imgui.type.ImBoolean
+import org.emberstudios.engine.util.toSnakeCase
 import kotlin.reflect.full.declaredFunctions
 
 abstract class EditorWindow(
-	val name: String,
-	var closeable: Boolean = false,
-	var flags: Int = 0,
+	var name: String,
+	private var closeable: Boolean = false,
+	private var flags: Int = 0,
 ) {
 
 	private var hasFocus = false
 
 	fun render() {
-		val hasMenuBar = hasMenuBar()
+		val hasMenuBar = hasFunction("renderMenuBar")
+		val hasContextMenuPopup = hasFunction("renderContextMenuPopup")
 
 		val flags = if (hasMenuBar) ImGuiWindowFlags.MenuBar or flags else flags
 
@@ -28,6 +30,11 @@ abstract class EditorWindow(
 			if (ImGui.begin(name, imOpen, flags)) {
 				EditorContext.setShown(this, imOpen.get())
 
+				if (hasContextMenuPopup && ImGui.beginPopupContextItem()) {
+					renderContextMenuPopup()
+					ImGui.endPopup()
+				}
+
 				if (hasMenuBar) {
 					ImGui.beginMenuBar()
 					renderMenuBar()
@@ -38,6 +45,11 @@ abstract class EditorWindow(
 			}
 		} else {
 			if (ImGui.begin(name, flags)) {
+				if (hasContextMenuPopup && ImGui.beginPopupContextItem()) {
+					renderContextMenuPopup()
+					ImGui.endPopup()
+				}
+
 				if (hasMenuBar) {
 					ImGui.beginMenuBar()
 					renderMenuBar()
@@ -56,10 +68,25 @@ abstract class EditorWindow(
 	open fun init() {}
 	open fun update(deltaTime: Float) {}
 
+	open fun loadConfig() {}
+	open fun saveConfig() {}
+
+	protected inline fun <reified T> loadConfigValue(key: String, default: T) =
+		EditorConfig.get("${this::class.simpleName!!.toSnakeCase()}.$key", default)
+	protected inline fun <reified T> saveConfigValue(key: String, value: T) =
+		EditorConfig.set("${this::class.simpleName!!.toSnakeCase()}.$key", value)
+
 	open fun renderMenuBar() {}
+	open fun renderContextMenuPopup() {}
 	protected abstract fun renderContent()
 
-	private fun hasMenuBar() = this::class.declaredFunctions
-		.firstOrNull { it.name == "renderMenuBar" }
-		?.isOpen == true
+	private fun hasFunction(functionName: String): Boolean {
+		val baseMethod = EditorWindow::class.declaredFunctions
+			.firstOrNull { it.name == functionName } ?: return false
+
+		val subMethod = this::class.declaredFunctions
+			.firstOrNull { it.name == functionName && it != baseMethod }
+
+		return subMethod != null
+	}
 }

@@ -15,6 +15,7 @@ import org.emberstudios.core.window.WindowAPIType
 import org.emberstudios.engine.event.AppQuitEvent
 import org.emberstudios.engine.event.EventBus
 import org.emberstudios.engine.event.WindowResizeEvent
+import kotlin.system.exitProcess
 
 object Engine {
 
@@ -35,6 +36,8 @@ object Engine {
 		EventBus.dispatch(AppQuitEvent())
 
 		cleanup()
+
+		exitProcess(0)
 	}
 
 	private fun init() {

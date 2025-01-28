@@ -61,6 +61,7 @@ class EditorLayer : Layer {
 
 	override fun onDetach() {
 		sceneManager.saveSceneToFile(SCENE_FILEPATH)
+		editorContext.saveConfig()
 	}
 
 	override fun onUpdate(deltaTime: Float) {

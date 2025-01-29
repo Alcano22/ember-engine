@@ -66,6 +66,7 @@ class ConsoleWindow : EditorWindow("Console") {
 	private val logCalls = mutableListOf<ConsoleLogCall>()
 	private var selectedLogLevel = ImInt(2)
 
+	private var autoScroll = ImBoolean(true)
 	private var selectedIndex = -1
 
 	init {
@@ -80,12 +81,6 @@ class ConsoleWindow : EditorWindow("Console") {
 			LOGGER.exit { "Could not retrieve ConsoleWindow log appender" }
 			logAppender = null
 		}
-
-		LOGGER.trace { "TEST" }
-		LOGGER.debug { "TEST" }
-		LOGGER.info { "TEST" }
-		LOGGER.warn { "TEST" }
-		LOGGER.error { "TEST" }
 	}
 
 	private fun onLogCall(logCall: ConsoleLogCall) {
@@ -99,12 +94,20 @@ class ConsoleWindow : EditorWindow("Console") {
 		if (ImGui.combo("Log Level", selectedLogLevel, LOG_LEVELS))
 			LOGGER.trace { "Log Level changed to: ${LOG_LEVELS[selectedLogLevel.get()]}" }
 
+		ImGui.checkbox("Auto-Scroll", autoScroll)
+
 		if (ImGui.button("Clear Console"))
 			logCalls.clear()
 	}
 
 	override fun renderContent() {
 		if (logAppender == null) return
+
+		val goToBottom = ImGui.button("Go to bottom")
+
+		ImGui.separator()
+
+		val isAtBottom = ImGui.getScrollY() >= ImGui.getScrollMaxY() - 1f
 
 		if (ImGui.beginTable("LogTable", 1, ImGuiTableFlags.RowBg or ImGuiTableFlags.ScrollY)) {
 			val selectedLevel = LOG_LEVEL_VALUES[selectedLogLevel.get()]
@@ -116,16 +119,24 @@ class ConsoleWindow : EditorWindow("Console") {
 				ImGui.tableNextColumn()
 
 				val selected = (i == selectedIndex)
+				ImGui.pushStyleColor(ImGuiCol.HeaderActive, Color.IM_TRANSPARENT)
+				if (selected)
+					ImGui.pushStyleColor(ImGuiCol.HeaderHovered, ImGui.getStyleColorVec4(ImGuiCol.Header))
+				else
+					ImGui.pushStyleColor(ImGuiCol.HeaderHovered, Color.IM_TRANSPARENT)
 				ImGui.pushStyleColor(ImGuiCol.Text, logCall.color)
 				if (ImGui.selectable(logCall.msg, selected, ImGuiSelectableFlags.SpanAllColumns)) {
 					InspectorWindow.inspect(logCall)
 					selectedIndex = i
 				}
-				ImGui.popStyleColor()
+				ImGui.popStyleColor(3)
 			}
 
 			ImGui.endTable()
 		}
+
+		if ((autoScroll.get() && isAtBottom) || goToBottom)
+			ImGui.setScrollY(ImGui.getScrollMaxY())
 	}
 
 	override fun loadConfig() {

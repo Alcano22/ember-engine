@@ -134,14 +134,16 @@
                 ImGui.beginGroup()
 
                 ImGui.pushStyleColor(ImGuiCol.HeaderActive, Color.IM_TRANSPARENT)
-                if (selected)
-                    ImGui.pushStyleColor(ImGuiCol.HeaderHovered, ImGui.getStyleColorVec4(ImGuiCol.Header))
-                else
+                if (selected) {
+					val col = ImGui.getStyleColorVec4(ImGuiCol.Header)
+	                ImGui.pushStyleColor(ImGuiCol.HeaderHovered, col)
+	                ImGui.pushStyleColor(ImGuiCol.HeaderActive, col)
+                } else
                     ImGui.pushStyleColor(ImGuiCol.HeaderHovered, Color.IM_TRANSPARENT)
                 if (ImGui.selectable("##${file.path}", selected,
                         ImGuiSelectableFlags.None, groupWidth, groupHeight))
                     selectedFile = file
-                ImGui.popStyleColor(2)
+                ImGui.popStyleColor(if (selected) 3 else 2)
 
                 val icon = if (file.isDirectory) FOLDER_ICON else when (file.extension) {
                     "png" -> ResourceManager.loadTexture(file.path)

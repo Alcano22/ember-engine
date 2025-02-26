@@ -1,5 +1,5 @@
 <configuration>
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="NETWORK_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
                 [%d{HH:mm:ss}][%level] \(%logger{36}\) %msg%n
@@ -12,7 +12,7 @@
         </filter>
     </appender>
 
-    <appender name="ERROR_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="NETWORK_ERROR_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
                 %red([%d{HH:mm:ss}][%level][%class{0}.%method\(%file:%line\)] \(%logger{36}\) %msg%n)
@@ -25,17 +25,11 @@
         </filter>
     </appender>
 
-    <appender name="EDITOR_CONSOLE" class="org.emberstudios.engine.util.ConsoleWindowLogAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>[%d{HH:mm:ss}] \(%logger{36}\) %msg%n</pattern>
-        </layout>
-    </appender>
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/latest.log</file>
+    <appender name="NETWORK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/network.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/%d{yyyy-MM-dd_HH-mm-ss}.log</fileNamePattern>
+            <fileNamePattern>logs/network-%d{yyyy-MM-dd_HH-mm-ss}.log</fileNamePattern>
 
             <maxHistory>10</maxHistory>
 
@@ -47,10 +41,15 @@
         </encoder>
     </appender>
 
+    <logger name="org.emberstudios.networking" level="debug">
+        <appender-ref ref="NETWORK_CONSOLE" />
+        <appender-ref ref="NETWORK_ERROR_CONSOLE" />
+        <appender-ref ref="NETWORK_FILE" />
+    </logger>
+
     <root level="trace">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="ERROR_CONSOLE" />
-        <appender-ref ref="EDITOR_CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="NETWORK_CONSOLE" />
+        <appender-ref ref="NETWORK_ERROR_CONSOLE" />
+        <appender-ref ref="NETWORK_FILE" />
     </root>
 </configuration>

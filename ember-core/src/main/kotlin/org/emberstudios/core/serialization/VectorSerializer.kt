@@ -1,4 +1,4 @@
-package org.emberstudios.engine.serialization
+package org.emberstudios.core.serialization
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor

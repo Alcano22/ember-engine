@@ -15,6 +15,7 @@ dependencies {
 	implementation(project(":ember-editor"))
 	implementation(project(":ember-rendering"))
 	implementation(project(":ember-windowing"))
+	implementation(project(":ember-networking"))
 
 	implementation("io.github.classgraph:classgraph:4.8.149")
 

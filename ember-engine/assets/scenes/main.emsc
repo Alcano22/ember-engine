@@ -5,7 +5,11 @@
             "gid": "733fb33c-a508-46f6-9389-af3be88d4fc1",
             "components": [
                 {
-                    "#type": "org.emberstudios.engine.gameobject.component.Transform"
+                    "#type": "org.emberstudios.engine.gameobject.component.Transform",
+                    "position": {
+                        "x": 3.81,
+                        "y": 0.0
+                    }
                 },
                 {
                     "#type": "org.emberstudios.engine.gameobject.component.PlayerMove",

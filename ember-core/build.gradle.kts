@@ -24,6 +24,8 @@ dependencies {
 	implementation("org.lwjgl", "lwjgl-stb")
 	runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
 
+	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
 	api("io.github.oshai:kotlin-logging:$kotlinLoggingVersion")
 	api("ch.qos.logback:logback-classic:$logbackVersion")
 	api("org.fusesource.jansi:jansi:$jansiVersion")

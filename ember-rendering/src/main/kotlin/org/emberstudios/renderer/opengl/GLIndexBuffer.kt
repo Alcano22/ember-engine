@@ -22,4 +22,8 @@ internal class GLIndexBuffer(indices: IntArray) : IndexBuffer {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 	}
 
+	override fun delete() {
+		glDeleteBuffers(id)
+	}
+
 }

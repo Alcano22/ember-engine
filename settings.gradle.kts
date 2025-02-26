@@ -23,5 +23,6 @@ include(":ember-core")
 include(":ember-editor")
 include(":ember-rendering")
 include(":ember-windowing")
+include(":ember-networking")
 
 rootProject.name = "ember-engine"

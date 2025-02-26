@@ -2,14 +2,7 @@ package org.emberstudios.engine.serialization
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import org.emberstudios.core.logger.getLogger
-import org.emberstudios.engine.gameobject.GameObject
-import org.emberstudios.engine.gameobject.component.Component
-import org.emberstudios.engine.gameobject.component.PlayerMove
-import org.emberstudios.engine.gameobject.component.SpriteRenderer
-import org.emberstudios.engine.gameobject.component.Transform
-import org.emberstudios.engine.util.Color
+import org.emberstudios.core.serialization.*
 import org.emberstudios.renderer.Texture
 import org.joml.*
 

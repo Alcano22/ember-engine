@@ -20,4 +20,5 @@ interface IndexBuffer {
 
 	fun bind()
 	fun unbind()
+	fun delete()
 }

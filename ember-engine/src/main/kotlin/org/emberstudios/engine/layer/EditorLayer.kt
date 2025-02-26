@@ -2,10 +2,17 @@ package org.emberstudios.engine.layer
 
 import imgui.ImGui
 import imgui.flag.ImGuiDockNodeFlags
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.editor.*
 import org.emberstudios.engine.scene.SceneManager
+import org.emberstudios.networking.GameClient
+import org.emberstudios.networking.NetTransform
 import org.emberstudios.renderer.*
+import java.util.*
 
 class EditorLayer : Layer {
 
@@ -23,6 +30,7 @@ class EditorLayer : Layer {
 
 	private val sceneManager = SceneManager()
 	private val editorContext = EditorContext()
+	private val gameClient = GameClient()
 
 	private lateinit var camera: Camera
 	private lateinit var framebuffer: Framebuffer
@@ -49,6 +57,20 @@ class EditorLayer : Layer {
 
 		initScene()
 		editorContext.init()
+
+		CoroutineScope(Dispatchers.IO).launch {
+			gameClient.connect()
+			LOGGER.debug { "Test" }
+			gameClient.sendMessage("Hello from client!")
+
+			val netTransform = NetTransform(
+				UUID.randomUUID().toString(),
+				1f, 2f, 3f,
+				0f,
+				1f, 3f, 5f
+			)
+			gameClient.sendTransform(netTransform)
+		}
 	}
 
 	fun saveScene() = sceneManager.saveSceneToFile(SCENE_FILEPATH)
@@ -62,6 +84,10 @@ class EditorLayer : Layer {
 	override fun onDetach() {
 		sceneManager.saveSceneToFile(SCENE_FILEPATH)
 		editorContext.saveConfig()
+
+		CoroutineScope(Dispatchers.IO).launch {
+			gameClient.disconnect()
+		}
 	}
 
 	override fun onUpdate(deltaTime: Float) {

@@ -42,6 +42,12 @@ internal class GLFWWindow : Window {
 			return (scaleX + scaleY) / 2f
 		}
 	override val time get() = glfwGetTime().toFloat()
+	override var lockedCursor: Boolean
+		get() = glfwGetInputMode(handle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED
+		set(value) {
+			val mode = if (value) GLFW_CURSOR_DISABLED else GLFW_CURSOR_NORMAL
+			glfwSetInputMode(handle, GLFW_CURSOR, mode)
+		}
 
 	override fun init(title: String, width: Int, height: Int): Boolean {
 		if (!glfwInit()) {

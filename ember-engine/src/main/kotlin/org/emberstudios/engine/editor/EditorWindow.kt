@@ -4,7 +4,7 @@ import imgui.ImGui
 import imgui.ImVec2
 import imgui.flag.ImGuiWindowFlags
 import imgui.type.ImBoolean
-import org.emberstudios.engine.util.toSnakeCase
+import org.emberstudios.core.util.toSnakeCase
 import kotlin.reflect.full.declaredFunctions
 
 abstract class EditorWindow(

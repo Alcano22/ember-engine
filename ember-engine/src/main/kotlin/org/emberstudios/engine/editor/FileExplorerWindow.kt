@@ -8,7 +8,7 @@
     import org.emberstudios.core.io.ResourceManager
     import org.emberstudios.core.logger.getLogger
     import org.emberstudios.engine.util.Color
-    import org.emberstudios.input.KeyCode
+    import org.emberstudios.input.Key
     import org.emberstudios.renderer.loadTexture
     import java.awt.Desktop
     import java.io.File
@@ -176,7 +176,7 @@
 
             ImGui.popStyleVar()
 
-            if (ImGui.isKeyPressed(KeyCode.DELETE) && selectedFile != null) {
+            if (ImGui.isKeyPressed(Key.DELETE.code) && selectedFile != null) {
                 selectedFile!!.delete()
                 reload()
             }

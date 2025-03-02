@@ -44,14 +44,14 @@ object Input {
 	}
 
 	// Keyboard
-	fun getKey(key: Int) = keyboard.getKey(key) && !blockKeyboard
-	fun getKeyDown(key: Int) = keyboard.getKeyDown(key) && !blockKeyboard
-	fun getKeyUp(key: Int) = keyboard.getKeyUp(key) && !blockKeyboard
+	fun getKey(key: Key) = keyboard.getKey(key) && !blockKeyboard
+	fun getKeyDown(key: Key) = keyboard.getKeyDown(key) && !blockKeyboard
+	fun getKeyUp(key: Key) = keyboard.getKeyUp(key) && !blockKeyboard
 
 	fun getAxis(axis: Axis) = when (axis) {
 		Axis.HORIZONTAL -> {
-			val left = getKey(KeyCode.A) || getKey(KeyCode.LEFT)
-			val right = getKey(KeyCode.D) || getKey(KeyCode.RIGHT)
+			val left = getKey(Key.A) || getKey(Key.LEFT)
+			val right = getKey(Key.D) || getKey(Key.RIGHT)
 
 			when {
 				left && !right -> -1f
@@ -61,8 +61,8 @@ object Input {
 		}
 
 		Axis.VERTICAL -> {
-			val down = getKey(KeyCode.S) || getKey(KeyCode.DOWN)
-			val up = getKey(KeyCode.W) || getKey(KeyCode.UP)
+			val down = getKey(Key.S) || getKey(Key.DOWN)
+			val up = getKey(Key.W) || getKey(Key.UP)
 
 			when {
 				down && !up -> -1f
@@ -83,9 +83,11 @@ object Input {
 	fun getMouseButtonUp(button: Int) = mouse.getButtonUp(button) && !blockMouse
 
 	// Controller
-	fun getControllerButton(button: Int) = controller.getButton(button)
-	fun getControllerButtonDown(button: Int) = controller.getButtonDown(button)
-	fun getControllerButtonUp(button: Int) = controller.getButtonUp(button)
+	fun getControllerButton(button: ControllerButton) = controller.getButton(button)
+	fun getControllerButtonDown(button: ControllerButton) = controller.getButtonDown(button)
+	fun getControllerButtonUp(button: ControllerButton) = controller.getButtonUp(button)
+
+	fun getControllerButtons() = controller.getButtons()
 
 	fun setControllerVibration(leftMotor: Float, rightMotor: Float) =
 		controller.setVibration(leftMotor, rightMotor)

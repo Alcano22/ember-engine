@@ -23,6 +23,7 @@ interface Window {
 	val nativeHandle: Long
 	val dpiScale: Float
 	val time: Float
+	var lockedCursor: Boolean
 
 	fun init(title: String, width: Int, height: Int): Boolean
 	fun update()

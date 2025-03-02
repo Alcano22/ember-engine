@@ -24,40 +24,43 @@ internal class KeyboardListener {
 		}
 	}
 
-	fun onKey(key: Int, action: Int) {
-		if (key >= NUM_KEYS) return
+	fun onKey(keyCode: Int, action: Int) {
+		if (keyCode !in 0..NUM_KEYS) return
 
 		when (action) {
-			GLFW_PRESS -> pressedKeys[key] = true
-			GLFW_RELEASE -> pressedKeys[key] = false
+			GLFW_PRESS -> pressedKeys[keyCode] = true
+			GLFW_RELEASE -> pressedKeys[keyCode] = false
 		}
 	}
 
-	fun getKey(key: Int): Boolean {
-		if (key >= NUM_KEYS) {
-			LOGGER.warn { "Invalid key: '$key'" }
+	fun getKey(key: Key): Boolean {
+		val code = key.code
+		if (code !in 0..NUM_KEYS) {
+			LOGGER.warn { "Invalid key: '$code'" }
 			return false
 		}
 
-		return currentKeys[key]
+		return currentKeys[code]
 	}
 
-	fun getKeyDown(key: Int): Boolean {
-		if (key >= NUM_KEYS) {
-			LOGGER.warn { "Invalid key: '$key'" }
+	fun getKeyDown(key: Key): Boolean {
+		val code = key.code
+		if (code !in 0..NUM_KEYS) {
+			LOGGER.warn { "Invalid key: '$code'" }
 			return false
 		}
 
-		return downKeys[key]
+		return downKeys[code]
 	}
 
-	fun getKeyUp(key: Int): Boolean {
-		if (key >= NUM_KEYS) {
-			LOGGER.warn { "Invalid key: '$key'" }
+	fun getKeyUp(key: Key): Boolean {
+		val code = key.code
+		if (code !in 0..NUM_KEYS) {
+			LOGGER.warn { "Invalid key: '$code'" }
 			return false
 		}
 
-		return upKeys[key]
+		return upKeys[code]
 	}
 
 }

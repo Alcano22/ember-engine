@@ -12,7 +12,7 @@ import org.emberstudios.engine.gameobject.component.ExposeInInspector
 import org.emberstudios.engine.gameobject.component.Transform
 import org.emberstudios.engine.serialization.GameObjectSerializer
 import org.emberstudios.engine.util.Color
-import org.emberstudios.engine.util.toDisplayStyle
+import org.emberstudios.core.util.toDisplayStyle
 import org.joml.Vector2f
 import org.joml.Vector2i
 import org.joml.Vector3f

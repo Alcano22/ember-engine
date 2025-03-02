@@ -5,9 +5,9 @@ import imgui.ImVec2
 import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiWindowFlags
 import org.emberstudios.core.logger.getLogger
+import org.emberstudios.engine.Engine
 import org.emberstudios.engine.layer.EditorLayer
 import org.emberstudios.engine.layer.EditorLayer.RuntimeState
-import org.emberstudios.engine.networking.NetworkingManager
 import org.emberstudios.engine.util.Time
 import org.emberstudios.input.Input
 import org.emberstudios.renderer.Camera

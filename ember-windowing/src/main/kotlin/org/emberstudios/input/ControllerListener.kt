@@ -79,9 +79,18 @@ internal class ControllerListener {
         XInputButton.UNKNOWN -> false
     }
 
-    fun getButton(button: Int) = currentButtons[button]
-    fun getButtonDown(button: Int) = downButtons[button]
-    fun getButtonUp(button: Int) = upButtons[button]
+    fun getButton(button: ControllerButton) = currentButtons[button.code]
+    fun getButtonDown(button: ControllerButton) = downButtons[button.code]
+    fun getButtonUp(button: ControllerButton) = upButtons[button.code]
+
+    fun getButtons(): List<ControllerButton> {
+        val buttons = mutableListOf<ControllerButton>()
+        for (button in ControllerButton.entries) {
+            if (currentButtons[button.code])
+                buttons += button
+        }
+        return buttons
+    }
 
     fun setVibration(leftMotor: Float, rightMotor: Float) = device?.let {
         val max = 65535

@@ -13,6 +13,7 @@ class Color(r: Float, g: Float, b: Float, a: Float = 1f) : Vector4f(r, g, b, a) 
         val RED         = Color(1f, 0f, 0f)
         val GREEN       = Color(0f, 1f, 0f)
         val BLUE        = Color(0f, 0f, 1f)
+        val YELLOW      = Color(1f, 1f, 0f)
         val TRANSPARENT = Color(0f, 0f, 0f, 0f)
 
         val IM_WHITE        = WHITE.toImVec()
@@ -20,7 +21,16 @@ class Color(r: Float, g: Float, b: Float, a: Float = 1f) : Vector4f(r, g, b, a) 
         val IM_RED          = RED.toImVec()
         val IM_GREEN        = GREEN.toImVec()
         val IM_BLUE         = BLUE.toImVec()
+        val IM_YELLOW       = YELLOW.toImVec()
         val IM_TRANSPARENT  = TRANSPARENT.toImVec()
+
+        val HEX_WHITE        = WHITE.toHex()
+        val HEX_BLACK        = BLACK.toHex()
+        val HEX_RED          = RED.toHex()
+        val HEX_GREEN        = GREEN.toHex()
+        val HEX_BLUE         = BLUE.toHex()
+        val HEX_YELLOW       = YELLOW.toHex()
+        val HEX_TRANSPARENT  = TRANSPARENT.toHex()
     }
 
     var r: Float = r
@@ -47,5 +57,14 @@ class Color(r: Float, g: Float, b: Float, a: Float = 1f) : Vector4f(r, g, b, a) 
     }
 
     fun toVec4f() = Vector4f(this)
+
+    fun toHex(): Int {
+        val ir = (r.coerceIn(0f, 1f) * 255).toInt()
+        val ig = (g.coerceIn(0f, 1f) * 255).toInt()
+        val ib = (b.coerceIn(0f, 1f) * 255).toInt()
+        val ia = (a.coerceIn(0f, 1f) * 255).toInt()
+        return (ir shl 24) or (ig shl 16) or (ib shl 8) or ia
+    }
+
 
 }

@@ -2,6 +2,7 @@ package org.emberstudios.engine.layer
 
 import imgui.ImFontConfig
 import imgui.ImGui
+import imgui.extension.implot.ImPlot
 import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiConfigFlags
 import imgui.flag.ImGuiDir
@@ -32,6 +33,7 @@ class ImGuiLayer(
 
 	override fun onAttach() {
 		ImGui.createContext()
+		ImPlot.createContext()
 
 		val io = ImGui.getIO()
 

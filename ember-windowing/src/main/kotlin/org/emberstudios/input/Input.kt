@@ -19,13 +19,20 @@ object Input {
 	val mouseDelta get() = mousePosition - mouseLastPosition
 	val mouseScrollDelta get() = if (blockMouse) Vector2f() else mouse.scrollDelta
 
-	val controllerLeftStick get() = controller.leftStick
-	val controllerRightStick get() = controller.rightStick
+	val controllerLeftStick: Vector2f get() {
+		val stick = controller.leftStick
+		return if (stick.length() > controllerStickDeadzone) stick else Vector2f()
+	}
+	val controllerRightStick: Vector2f get() {
+		val stick = controller.rightStick
+		return if (stick.length() > controllerStickDeadzone) stick else Vector2f()
+	}
 	val controllerLeftTrigger get() = controller.leftTrigger
 	val controllerRightTrigger get() = controller.rightTrigger
 
 	var blockingCallback: () -> Pair<Boolean, Boolean> = { false to false }
 	var mouseViewportPosition = Vector2f(-1f, -1f)
+	var controllerStickDeadzone = 0.1f
 
 	private val blockKeyboard get() = blockingCallback().first
 	private val blockMouse get() = blockingCallback().second

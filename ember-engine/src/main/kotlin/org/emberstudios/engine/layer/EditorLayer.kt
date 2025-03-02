@@ -1,18 +1,14 @@
 package org.emberstudios.engine.layer
 
 import imgui.ImGui
+import imgui.ImVec2
 import imgui.flag.ImGuiDockNodeFlags
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.emberstudios.core.logger.getLogger
+import org.emberstudios.engine.Engine
 import org.emberstudios.engine.editor.*
+import org.emberstudios.engine.networking.NetworkingManager
 import org.emberstudios.engine.scene.SceneManager
-import org.emberstudios.networking.GameClient
-import org.emberstudios.networking.NetTransform
 import org.emberstudios.renderer.*
-import java.util.*
 
 class EditorLayer : Layer {
 
@@ -28,9 +24,10 @@ class EditorLayer : Layer {
 		private val LOGGER = getLogger<EditorLayer>()
 	}
 
-	private val sceneManager = SceneManager()
 	private val editorContext = EditorContext()
-	private val gameClient = GameClient()
+
+	private val sceneManager = SceneManager()
+	private val networkingManager = NetworkingManager()
 
 	private lateinit var camera: Camera
 	private lateinit var framebuffer: Framebuffer
@@ -54,23 +51,13 @@ class EditorLayer : Layer {
 		editorContext.registerWindow(SceneHierarchyWindow(sceneManager), true)
 		editorContext.registerWindow(FileExplorerWindow("assets"), true)
 		editorContext.registerWindow(TextEditorWindow(), false)
+		editorContext.registerWindow(ServerConnectWindow(networkingManager), false)
+		editorContext.registerWindow(ServerConnectWindow.SuccessWindow(), false)
+		editorContext.registerWindow(ServerInfoWindow(networkingManager), false)
+		editorContext.registerWindow(ControllerTestWindow(), false)
 
 		initScene()
 		editorContext.init()
-
-		CoroutineScope(Dispatchers.IO).launch {
-			gameClient.connect()
-			LOGGER.debug { "Test" }
-			gameClient.sendMessage("Hello from client!")
-
-			val netTransform = NetTransform(
-				UUID.randomUUID().toString(),
-				1f, 2f, 3f,
-				0f,
-				1f, 3f, 5f
-			)
-			gameClient.sendTransform(netTransform)
-		}
 	}
 
 	fun saveScene() = sceneManager.saveSceneToFile(SCENE_FILEPATH)
@@ -82,12 +69,10 @@ class EditorLayer : Layer {
 	}
 
 	override fun onDetach() {
+		networkingManager.cleanup()
+
 		sceneManager.saveSceneToFile(SCENE_FILEPATH)
 		editorContext.saveConfig()
-
-		CoroutineScope(Dispatchers.IO).launch {
-			gameClient.disconnect()
-		}
 	}
 
 	override fun onUpdate(deltaTime: Float) {
@@ -111,6 +96,57 @@ class EditorLayer : Layer {
 
 	override fun onRenderImGui() {
 		ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode)
+
+		if (ImGui.beginMainMenuBar()) {
+			val connectedToServer = networkingManager.isConnected
+
+			if (ImGui.beginMenu("File")) {
+				if (ImGui.menuItem("Quit"))
+					Engine.quit()
+
+				ImGui.endMenu()
+			}
+
+			if (ImGui.beginMenu("Edit")) {
+
+
+				ImGui.endMenu()
+			}
+
+			if (ImGui.beginMenu("View")) {
+				if (ImGui.beginMenu("Windows")) {
+					if (ImGui.menuItem("Server Info"))
+						editorContext.show<ServerInfoWindow>()
+
+					ImGui.endMenu()
+				}
+
+				if (ImGui.beginMenu("Input")) {
+					if (ImGui.menuItem("Controller Test"))
+						editorContext.show<ControllerTestWindow>()
+
+					ImGui.endMenu()
+				}
+
+				ImGui.endMenu()
+			}
+
+			if (ImGui.beginMenu("Networking")) {
+				if (connectedToServer) ImGui.beginDisabled()
+				if (ImGui.menuItem("Connect to Server"))
+					editorContext.showCentered<ServerConnectWindow>(ImVec2(300f, 200f))
+				if (connectedToServer) ImGui.endDisabled()
+
+				if (!connectedToServer) ImGui.beginDisabled()
+				if (ImGui.menuItem("Disconnect from Server"))
+					networkingManager.disconnect()
+				if (!connectedToServer) ImGui.endDisabled()
+
+				ImGui.endMenu()
+			}
+
+			ImGui.endMainMenuBar()
+		}
 
 		editorContext.render()
 	}

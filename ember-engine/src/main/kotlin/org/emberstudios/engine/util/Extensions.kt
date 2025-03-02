@@ -16,6 +16,8 @@ fun String.toSnakeCase() = this
     .replace(Regex("([a-z])([A-Z])"), "$1_$2")
     .lowercase()
 
+fun Float.coerceIn01() = this.coerceIn(0f, 1f)
+
 // JOML
 fun Vector2f.toImVec() = ImVec2(x, y)
 fun Vector4f.toImVec() = ImVec4(x, y, z, w)

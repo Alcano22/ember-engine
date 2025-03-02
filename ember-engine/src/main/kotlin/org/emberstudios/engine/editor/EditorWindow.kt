@@ -1,6 +1,7 @@
 package org.emberstudios.engine.editor
 
 import imgui.ImGui
+import imgui.ImVec2
 import imgui.flag.ImGuiWindowFlags
 import imgui.type.ImBoolean
 import org.emberstudios.engine.util.toSnakeCase
@@ -10,7 +11,11 @@ abstract class EditorWindow(
 	var name: String,
 	private var closeable: Boolean = false,
 	private var flags: Int = 0,
+	val saveShowingInConfig: Boolean = true
 ) {
+
+	var position: ImVec2? = null
+	var size: ImVec2? = null
 
 	private var hasFocus = false
 
@@ -20,6 +25,15 @@ abstract class EditorWindow(
 
 		val flags = if (hasMenuBar) ImGuiWindowFlags.MenuBar or flags else flags
 
+		position?.let {
+			ImGui.setNextWindowPos(it)
+			position = null
+		}
+		size?.let {
+			ImGui.setNextWindowSize(it)
+			size = null
+		}
+
 		if (hasFocus) {
 			ImGui.setNextWindowFocus()
 			hasFocus = false
@@ -28,7 +42,10 @@ abstract class EditorWindow(
 		if (closeable) {
 			val imOpen = ImBoolean(EditorContext.isShown(this))
 			if (ImGui.begin(name, imOpen, flags)) {
-				EditorContext.setShown(this, imOpen.get())
+				if (imOpen.get())
+					show()
+				else
+					hide()
 
 				if (hasContextMenuPopup && ImGui.beginPopupContextItem()) {
 					renderContextMenuPopup()
@@ -68,17 +85,24 @@ abstract class EditorWindow(
 	open fun init() {}
 	open fun update(deltaTime: Float) {}
 
+	open fun preShow() {}
+
 	open fun loadConfig() {}
 	open fun saveConfig() {}
 
+	protected fun show() = EditorContext.show(this)
+	protected fun hide() = EditorContext.hide(this)
+
 	protected inline fun <reified T> loadConfigValue(key: String, default: T) =
-		EditorConfig.get("${this::class.simpleName!!.toSnakeCase()}.$key", default)
+		EditorConfig.get(getConfigKey(key), default)
 	protected inline fun <reified T> saveConfigValue(key: String, value: T) =
-		EditorConfig.set("${this::class.simpleName!!.toSnakeCase()}.$key", value)
+		EditorConfig.set(getConfigKey(key), value)
 
 	open fun renderMenuBar() {}
 	open fun renderContextMenuPopup() {}
 	protected abstract fun renderContent()
+
+	fun getConfigKey(key: String) = "${this::class.simpleName!!.toSnakeCase()}.$key"
 
 	private fun hasFunction(functionName: String): Boolean {
 		val baseMethod = EditorWindow::class.declaredFunctions

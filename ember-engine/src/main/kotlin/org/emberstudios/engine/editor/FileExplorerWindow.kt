@@ -22,7 +22,9 @@
     ) : EditorWindow("File Explorer") {
 
         companion object {
-            private const val THUMBNAIL_SIZE_STEP = 32f
+            private const val THUMBNAIL_SIZE_FACTOR_MIN = .25f
+            private const val THUMBNAIL_SIZE_FACTOR_MAX = 3f
+            private const val THUMBNAIL_SIZE_FACTOR_STEP = .05f
             private const val PADDING = 10f
 
             private val FILE_ICON = ResourceManager.loadTexture("textures\\file_icon.png")
@@ -35,10 +37,12 @@
 
         private val files = mutableListOf<File>()
 
-        private var thumbnailSize = 128f
+        private var thumbnailSizeFactor = 0f
         private val searchQuery = ImString(256)
 
         private var selectedFile: File? = null
+
+        private val thumbnailSize get() = 128f * thumbnailSizeFactor
 
         init {
             loadPath(rootPath)
@@ -86,29 +90,29 @@
         private fun reload() { loadPath(currentPath) }
 
         override fun renderContent() {
-            val buttonSize = 32f
-            val backButtonWidth = 64f
-            val padding = ImGui.getStyle().windowPaddingX
-            val availWidth = ImGui.getContentRegionAvailX()
-            val searchBarWidth = availWidth - (buttonSize + padding) * 2f - (backButtonWidth + padding)
+            val resizeSliderWidth = 96f
+            val backButtonWidth = 32f
+            val searchBarWidth = ImGui.getContentRegionAvailX() - resizeSliderWidth - backButtonWidth -
+                    ImGui.getStyle().framePaddingX * 2f - ImGui.getStyle().windowPaddingX
 
             val parentExists = File(currentPath).parentFile != null
             if (!parentExists) ImGui.beginDisabled()
-            if (ImGui.button("<-"))
+            if (ImGui.button("<-", backButtonWidth, 0f))
                 loadPath(File(currentPath).parent)
             if (!parentExists) ImGui.endDisabled()
 
             ImGui.sameLine()
+
             ImGui.setNextItemWidth(searchBarWidth)
             ImGui.inputTextWithHint("##Search", "Search in $currentPath...", searchQuery)
 
             ImGui.sameLine()
-            if (ImGui.button("+", buttonSize, 0f))
-                thumbnailSize += THUMBNAIL_SIZE_STEP
 
-            ImGui.sameLine()
-            if (ImGui.button("-", buttonSize, 0f))
-                thumbnailSize -= THUMBNAIL_SIZE_STEP
+            ImGui.setNextItemWidth(resizeSliderWidth)
+            val imThumbnailSize = floatArrayOf(thumbnailSizeFactor)
+            if (ImGui.dragFloat("##ThumbnailSlider", imThumbnailSize,
+                    THUMBNAIL_SIZE_FACTOR_STEP, THUMBNAIL_SIZE_FACTOR_MIN, THUMBNAIL_SIZE_FACTOR_MAX, "%.2f"))
+                thumbnailSizeFactor = imThumbnailSize[0]
 
             ImGui.separator()
 
@@ -187,5 +191,13 @@
             val textEditorWindow = EditorContext.get<TextEditorWindow>()!!
             textEditorWindow.editFile(file)
             EditorContext.show(textEditorWindow)
+        }
+
+        override fun loadConfig() {
+            thumbnailSizeFactor = loadConfigValue("thumbnail_size_factor", 1f)
+        }
+
+        override fun saveConfig() {
+            saveConfigValue("thumbnail_size_factor", thumbnailSizeFactor)
         }
     }

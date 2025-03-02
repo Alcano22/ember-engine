@@ -3,18 +3,22 @@ package org.emberstudios.networking
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
+import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
+import org.emberstudios.core.logger.CORE_LOGGER
 import org.emberstudios.core.logger.getLogger
+import org.emberstudios.networking.config.ServerConfig
+import org.emberstudios.networking.config.loadConfig
 
-internal class GameServer(
-	private val tcpPort: Int = 9115,
-	private val udpPort: Int = 9125
-) {
+internal class GameServer(config: ServerConfig) {
 
 	companion object {
 		val LOGGER = getLogger<GameServer>()
 	}
+
+	private val tcpPort = config.tcpPort
+	private val udpPort = config.udpPort
 
 	suspend fun start(): Unit = coroutineScope {
 		launch { startTCPServer() }
@@ -39,22 +43,33 @@ internal class GameServer(
 		try {
 			while (true) {
 				val line = input.readUTF8Line() ?: break
-				LOGGER.info { "TCP received: \"$line\" from ${socket.remoteAddress}" }
-				when (line.trim().uppercase()) {
-					"DISCONNECT" -> {
+				when {
+					line == "DISCONNECT" -> {
 						output.writeStringUtf8("Goodbye!\n")
+						LOGGER.info { "Disconnected ${socket.remoteAddress}" }
 						break
+					}
+					line.startsWith("PING:") -> {
+						val timestamp = line.substringAfter("PING:")
+						output.writeStringUtf8("PONG:$timestamp\n")
 					}
 					else -> output.writeStringUtf8("Echo: $line\n")
 				}
 			}
 		} catch (e: Exception) {
-			LOGGER.error { "TCP client error: ${e.message}" }
+			if (e is CancellationException) {
+				throw e
+			} else if (e.message?.contains("Connection reset")!!) {
+				LOGGER.warn { "TCP client connection reset (likely due to graceful disconnect)." }
+			} else {
+				LOGGER.error { "TCP client error: ${e.message}" }
+			}
 		} finally {
 			LOGGER.info { "TCP client disconnected: ${socket.remoteAddress}" }
 			socket.close()
 		}
 	}
+
 
 	private suspend fun startUDPServer() = withContext(Dispatchers.IO) {
 		val selectorManager = SelectorManager(Dispatchers.IO)
@@ -75,6 +90,20 @@ internal class GameServer(
 
 }
 
-fun main() = runBlocking {
-	GameServer().start()
+suspend fun main() {
+	val config = loadConfig()
+	val server = GameServer(config)
+	val serverJob = CoroutineScope(Dispatchers.IO).launch { server.start() }
+
+	while (true) {
+		val input = readlnOrNull() ?: break
+		when (input.trim().lowercase()) {
+			"stop" -> {
+				CORE_LOGGER.info { "Stopping the server..." }
+				serverJob.cancelAndJoin()
+				break
+			}
+			else -> CORE_LOGGER.error { "Unknown command: $input" }
+		}
+	}
 }

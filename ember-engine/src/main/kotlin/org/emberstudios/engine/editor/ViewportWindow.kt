@@ -7,6 +7,7 @@ import imgui.flag.ImGuiWindowFlags
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.layer.EditorLayer
 import org.emberstudios.engine.layer.EditorLayer.RuntimeState
+import org.emberstudios.engine.networking.NetworkingManager
 import org.emberstudios.engine.util.Time
 import org.emberstudios.input.Input
 import org.emberstudios.renderer.Camera
@@ -122,7 +123,7 @@ class ViewportWindow(
 
 			ImGui.pushStyleColor(ImGuiCol.ChildBg, 0.1f, 0.1f, 0.1f, 0.4f)
 
-			ImGui.beginChild(
+			if (ImGui.beginChild(
 				"Stats",
 				STATS_WINDOW_WIDTH,
 				STATS_WINDOW_HEIGHT,
@@ -130,15 +131,15 @@ class ViewportWindow(
 				ImGuiWindowFlags.NoResize or
 						ImGuiWindowFlags.AlwaysAutoResize or
 						ImGuiWindowFlags.NoCollapse
-			)
+			)) {
+				ImGui.text("Stats")
+				ImGui.separator()
+				ImGui.text("FPS: $fps")
 
-			ImGui.text("Stats")
-			ImGui.separator()
-			ImGui.text("FPS: $fps")
+				ImGui.endChild()
 
-			ImGui.endChild()
-
-			ImGui.popStyleColor()
+				ImGui.popStyleColor()
+			}
 		}
 	}
 

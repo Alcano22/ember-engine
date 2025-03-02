@@ -40,6 +40,10 @@ object Engine {
 		exitProcess(0)
 	}
 
+	fun quit() {
+		window.quit()
+	}
+
 	private fun init() {
 		window = Window.create(WindowAPIType.GLFW)
 		if (!window.init("Ember Engine", 1200, 900))

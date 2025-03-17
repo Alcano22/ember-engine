@@ -98,10 +98,9 @@ class EditorContext {
 
     fun saveConfig() {
         windows.keys.forEach {
-            if (it.saveShowingInConfig) {
+            if (it.saveShowingInConfig)
                 EditorConfig.set(it.getConfigKey("showing"), isShown(it))
-                it.saveConfig()
-            }
+            it.saveConfig()
         }
 
         EditorConfig.saveConfig()

@@ -20,6 +20,7 @@ class Scene {
 
     fun init() = _gameObjects.forEach { it.init() }
     fun update(deltaTime: Float) = _gameObjects.forEach { it.update(deltaTime) }
+    fun fixedUpdate(deltaTime: Float) = _gameObjects.forEach { it.fixedUpdate(deltaTime) }
     fun render() = _gameObjects.forEach { it.render() }
     fun clear() = _gameObjects.clear()
 

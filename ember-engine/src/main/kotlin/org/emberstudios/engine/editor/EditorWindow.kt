@@ -4,7 +4,11 @@ import imgui.ImGui
 import imgui.ImVec2
 import imgui.flag.ImGuiWindowFlags
 import imgui.type.ImBoolean
+import org.emberstudios.core.logger.getLogger
 import org.emberstudios.core.util.toSnakeCase
+import org.emberstudios.engine.Engine
+import org.joml.Vector2f
+import kotlin.math.max
 import kotlin.reflect.full.declaredFunctions
 
 abstract class EditorWindow(
@@ -14,14 +18,21 @@ abstract class EditorWindow(
 	val saveShowingInConfig: Boolean = true
 ) {
 
+	companion object {
+		private val LOGGER = getLogger<EditorWindow>()
+	}
+
 	var position: ImVec2? = null
 	var size: ImVec2? = null
+
+	var isDragging: Boolean = false
+		private set
 
 	private var hasFocus = false
 
 	fun render() {
 		val hasMenuBar = hasFunction("renderMenuBar")
-		val hasContextMenuPopup = hasFunction("renderContextMenuPopup")
+		val hasContextMenu = hasFunction("renderContextMenuPopup")
 
 		val flags = if (hasMenuBar) ImGuiWindowFlags.MenuBar or flags else flags
 
@@ -29,6 +40,7 @@ abstract class EditorWindow(
 			ImGui.setNextWindowPos(it)
 			position = null
 		}
+
 		size?.let {
 			ImGui.setNextWindowSize(it)
 			size = null
@@ -47,7 +59,9 @@ abstract class EditorWindow(
 				else
 					hide()
 
-				if (hasContextMenuPopup && ImGui.beginPopupContextItem()) {
+				updateDraggingState()
+
+				if (hasContextMenu && ImGui.beginPopupContextItem()) {
 					renderContextMenuPopup()
 					ImGui.endPopup()
 				}
@@ -62,7 +76,9 @@ abstract class EditorWindow(
 			}
 		} else {
 			if (ImGui.begin(name, flags)) {
-				if (hasContextMenuPopup && ImGui.beginPopupContextItem()) {
+				updateDraggingState()
+
+				if (hasContextMenu && ImGui.beginPopupContextItem()) {
 					renderContextMenuPopup()
 					ImGui.endPopup()
 				}
@@ -78,6 +94,17 @@ abstract class EditorWindow(
 		}
 
 		ImGui.end()
+	}
+
+	private fun updateDraggingState() {
+		val windowPos = ImGui.getWindowPos()
+		val windowSize = ImGui.getWindowSize()
+		val mousePos = ImGui.getMousePos()
+		val titleBarHeight = ImGui.getFrameHeight()
+		val isMouseInTitleBar = mousePos.x >= windowPos.x &&
+				mousePos.x <= windowPos.x + windowSize.x &&
+				mousePos.y >= windowPos.y && mousePos.y <= windowPos.y + titleBarHeight
+		isDragging = isMouseInTitleBar && ImGui.isMouseDragging(0)
 	}
 
 	fun requestFocus() { hasFocus = true }
@@ -99,7 +126,9 @@ abstract class EditorWindow(
 		EditorConfig.set(getConfigKey(key), value)
 
 	open fun renderMenuBar() {}
+
 	open fun renderContextMenuPopup() {}
+
 	protected abstract fun renderContent()
 
 	fun getConfigKey(key: String) = "${this::class.simpleName!!.toSnakeCase()}.$key"

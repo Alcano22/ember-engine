@@ -16,9 +16,7 @@ import org.emberstudios.engine.networking.NetworkingManager
 import org.emberstudios.engine.util.Color
 import org.emberstudios.engine.util.Time
 
-class ServerInfoWindow(
-	private val networkingManager: NetworkingManager
-) : EditorWindow("Server Info") {
+class ServerInfoWindow : EditorWindow("Server Info") {
 
 	companion object {
 		private const val LATENCIES_MAX_SIZE = 30
@@ -31,13 +29,13 @@ class ServerInfoWindow(
 	private val latencyValues = mutableListOf<Long>()
 
 	override fun update(deltaTime: Float) {
-		if (!networkingManager.isConnected) return
+		if (!NetworkingManager.isConnected) return
 
 		if (nextMeasureLatencyTime > Time.time) return
 		nextMeasureLatencyTime = Time.time + 1f
 
 		CoroutineScope(Dispatchers.IO).launch {
-			val measured = networkingManager.measureLatency()
+			val measured = NetworkingManager.measureLatency()
 			latency = measured
 
 			synchronized(latencyValues) {
@@ -49,15 +47,15 @@ class ServerInfoWindow(
 	}
 
 	override fun renderContent() {
-		if (!networkingManager.isConnected) {
+		if (!NetworkingManager.isConnected) {
 			ImGui.text("Not connected to a server.")
 			return
 		}
 
-		ImGui.text("Host: ${networkingManager.hostAddress}")
-		ImGui.text("TCP Port: ${networkingManager.tcpPort}")
-		ImGui.text("UDP Port: ${networkingManager.udpPort}")
-		ImGui.text("Connected since: ${networkingManager.connectionDuration.toInt()}s")
+		ImGui.text("Host: ${NetworkingManager.hostAddress}")
+		ImGui.text("TCP Port: ${NetworkingManager.tcpPort}")
+		ImGui.text("UDP Port: ${NetworkingManager.udpPort}")
+		ImGui.text("Connected since: ${NetworkingManager.connectionDuration.toInt()}s")
 
 		ImGui.text("Latency: ")
 		ImGui.sameLine(0f, 0f)

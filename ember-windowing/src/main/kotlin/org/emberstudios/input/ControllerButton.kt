@@ -3,6 +3,9 @@ package org.emberstudios.input
 import com.github.strikerx3.jxinput.enums.XInputButton
 import org.emberstudios.core.util.toDisplayStyle
 
+/**
+ * Repesents a button on a controller.
+ */
 enum class ControllerButton(val code: Int) {
     A(XInputButton.A.ordinal),
     B(XInputButton.B.ordinal),
@@ -19,5 +22,8 @@ enum class ControllerButton(val code: Int) {
     DPAD_LEFT(XInputButton.DPAD_LEFT.ordinal),
     DPAD_RIGHT(XInputButton.DPAD_RIGHT.ordinal);
 
+    /**
+     * The display name of the button.
+     */
     val displayName = name.toDisplayStyle()
 }

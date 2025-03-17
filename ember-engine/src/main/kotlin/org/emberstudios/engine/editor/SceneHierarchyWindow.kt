@@ -4,20 +4,24 @@ import imgui.ImGui
 import imgui.flag.ImGuiTreeNodeFlags
 import imgui.type.ImString
 import org.emberstudios.core.logger.getLogger
+import org.emberstudios.engine.gameobject.GameObject
 import org.emberstudios.engine.scene.SceneManager
 
-class SceneHierarchyWindow(
-    private val sceneManager: SceneManager
-) : EditorWindow("Scene Hierarchy") {
+class SceneHierarchyWindow : EditorWindow("Scene Hierarchy") {
 
     companion object {
         private val LOGGER = getLogger<SceneHierarchyWindow>()
     }
 
-    private val gameObjects get() = sceneManager.currentScene?.gameObjects ?: emptyList()
+    private val gameObjects get() = SceneManager.currentScene?.gameObjects ?: emptyList()
     private val searchQuery = ImString(64)
 
     override fun renderContent() {
+        if (ImGui.button("+"))
+            SceneManager.currentScene?.loadGameObject(GameObject("New GameObject"))
+
+        ImGui.sameLine()
+
         ImGui.setNextItemWidth(ImGui.getContentRegionAvailX())
         if (ImGui.inputTextWithHint("##Search", "Search...", searchQuery)) {
             val input = searchQuery.get().trim()

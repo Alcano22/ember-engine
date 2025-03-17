@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kotlinPluginSerialization)
 }
 
+apply(plugin = "org.jetbrains.dokka")
+
 val lwjglNatives = getLWJGLNatives()
 
 dependencies {
@@ -28,4 +30,8 @@ dependencies {
 
     if (lwjglNatives == "natives-macos")
         runtimeOnly("org.lwjgl", "lwjgl-vulkan", classifier = lwjglNatives)
+}
+
+tasks.dokkaHtmlPartial {
+    outputDirectory.set(layout.buildDirectory.dir("dokka/partial"))
 }

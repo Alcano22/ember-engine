@@ -4,6 +4,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.emberstudios.core.io.ResourceManager
+import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.util.Color
 import org.emberstudios.renderer.*
 

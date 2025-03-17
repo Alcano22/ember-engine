@@ -3,6 +3,15 @@ package org.emberstudios.core.util
 import kotlin.math.abs
 
 // General
+/**
+ * Converts a string to display style.
+ *
+ * Example:
+ * ```
+ * "helloWorld".toDisplayStyle() // "Hello World"
+ * "hello_world".toDisplayStyle() // "Hello World"
+ * ```
+ */
 fun String.toDisplayStyle() = this
     .replace(Regex("([a-z])([A-Z])"), "$1 $2")
     .replace("_", " ")

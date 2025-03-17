@@ -1,5 +1,8 @@
 package org.emberstudios.renderer
 
+/**
+ * Represents the data type of shader attribute.
+ */
 data class BufferElement(
 	val type: ShaderDataType,
 	val name: String,
@@ -10,8 +13,16 @@ data class BufferElement(
 	var offset = 0
 }
 
+/**
+ * Represents the layout of a buffer.
+ *
+ * @property elements The elements of the buffer layout.
+ */
 class BufferLayout(vararg val elements: BufferElement) : Iterable<BufferElement> {
 
+	/**
+	 * The stride of the buffer layout.
+	 */
 	var stride = 0
 		private set
 
@@ -28,12 +39,22 @@ class BufferLayout(vararg val elements: BufferElement) : Iterable<BufferElement>
 	override fun iterator() = elements.iterator()
 }
 
+/**
+ * Creates a [BufferLayout].
+ *
+ * @param block The block to configure the buffer layout.
+ *
+ * @return The created buffer layout.
+ */
 fun bufferLayout(block: BufferLayoutBuilder.() -> Unit): BufferLayout {
 	val builder = BufferLayoutBuilder()
 	builder.block()
 	return builder.build()
 }
 
+/**
+ * Builder for [BufferLayout].
+ */
 class BufferLayoutBuilder {
 	private val elements = mutableListOf<BufferElement>()
 

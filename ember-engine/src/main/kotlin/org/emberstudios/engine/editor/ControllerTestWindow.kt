@@ -27,7 +27,7 @@ class ControllerTestWindow : EditorWindow("Controller Test") {
 			val length = 100f
 
 			val offsetX = index * (length + spacing)
-			val rootX = pos.x + length / 2f + offsetX
+			val rootX = pos.x + length * .5f + offsetX
 			val rootY = pos.y + offsetY
 
 			val triggerValue = when (side) {
@@ -40,7 +40,8 @@ class ControllerTestWindow : EditorWindow("Controller Test") {
 			drawList.addLine(
 				ImVec2(rootX, rootY),
 				ImVec2(rootX, rootY + length),
-				Color.HEX_WHITE
+				if (triggerValue.approx(1f)) Color.HEX_CYAN else Color.HEX_WHITE,
+				5f
 			)
 			drawList.addCircleFilled(
 				ImVec2(rootX, dotY),

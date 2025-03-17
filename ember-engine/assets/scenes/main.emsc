@@ -5,15 +5,62 @@
             "gid": "733fb33c-a508-46f6-9389-af3be88d4fc1",
             "components": [
                 {
-                    "#type": "org.emberstudios.engine.gameobject.component.Transform"
+                    "#type": "org.emberstudios.engine.gameobject.component.Transform",
+                    "gid": "b1bdf168-3ef9-41f4-abcd-6ee4db491240",
+                    "position": {
+                        "x": -2.3342829,
+                        "y": -1.7301967
+                    },
+                    "rotation": 3.3829766E-4
                 },
                 {
                     "#type": "org.emberstudios.engine.gameobject.component.PlayerMove",
-                    "speed": 10.0
+                    "gid": "ed2a992b-d186-44ea-869a-ae36fa3dfe70",
+                    "speed": 10.0,
+                    "jumpHeight": 1.0
                 },
                 {
                     "#type": "org.emberstudios.engine.gameobject.component.SpriteRenderer",
-                    "texture": "assets\\textures\\link.png"
+                    "gid": "a7eda60a-485a-4443-957a-a5c0baecba05",
+                    "texture": "assets\\textures\\link.png",
+                    "color": {
+                        "r": 1.0,
+                        "g": 0.0,
+                        "b": 0.0,
+                        "a": 1.0
+                    }
+                },
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.Rigidbody",
+                    "gid": "ad2bc458-9ade-4740-baf9-337b2e32d253",
+                    "type": "DYNAMIC",
+                    "continuous": true
+                }
+            ]
+        },
+        {
+            "name": "Floor",
+            "gid": "4a2d70da-a9d6-40bc-bdb5-262228506bdb",
+            "components": [
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.Transform",
+                    "gid": "b4b9da78-c42e-46ea-b121-a80541e4a31b",
+                    "position": {
+                        "x": 0.0,
+                        "y": -2.5
+                    },
+                    "scale": {
+                        "x": 10.0,
+                        "y": 0.5
+                    }
+                },
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.SpriteRenderer",
+                    "gid": "cacc985d-ea70-42f0-9f5e-6422274adaf0"
+                },
+                {
+                    "#type": "org.emberstudios.engine.gameobject.component.Rigidbody",
+                    "gid": "d849e38b-5158-4e19-ac8f-a09da3ad41fa"
                 }
             ]
         }

@@ -2,21 +2,17 @@ package org.emberstudios.engine.layer
 
 import imgui.ImGui
 import imgui.ImVec2
+import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiDockNodeFlags
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.Engine
 import org.emberstudios.engine.editor.*
 import org.emberstudios.engine.networking.NetworkingManager
 import org.emberstudios.engine.scene.SceneManager
+import org.emberstudios.engine.util.toJomlVec
 import org.emberstudios.renderer.*
 
 class EditorLayer : Layer {
-
-	enum class RuntimeState {
-		EDITOR,
-		PLAYING,
-		PAUSED
-	}
 
 	companion object {
 		const val SCENE_FILEPATH = "assets\\scenes\\main.emsc"
@@ -26,18 +22,10 @@ class EditorLayer : Layer {
 
 	private val editorContext = EditorContext()
 
-	private val sceneManager = SceneManager()
-	private val networkingManager = NetworkingManager()
+	private val gameRuntime get() = Engine.gameRuntime
 
 	private lateinit var camera: Camera
 	private lateinit var framebuffer: Framebuffer
-
-	var runtimeState = RuntimeState.EDITOR
-		set(value) {
-			val initScene = field == RuntimeState.PLAYING && value == RuntimeState.EDITOR
-			field = value
-			if (initScene) initScene()
-		}
 
 	override fun onAttach() {
 		camera = Camera()
@@ -48,47 +36,53 @@ class EditorLayer : Layer {
 		editorContext.registerWindow(ConsoleWindow(), true)
 		editorContext.registerWindow(ViewportWindow(framebuffer, this), true)
 		editorContext.registerWindow(InspectorWindow(), true)
-		editorContext.registerWindow(SceneHierarchyWindow(sceneManager), true)
+		editorContext.registerWindow(SceneHierarchyWindow(), true)
 		editorContext.registerWindow(FileExplorerWindow("assets"), true)
 		editorContext.registerWindow(TextEditorWindow(), false)
-		editorContext.registerWindow(ServerConnectWindow(networkingManager), false)
+		editorContext.registerWindow(ServerConnectWindow(), false)
 		editorContext.registerWindow(ServerConnectWindow.SuccessWindow(), false)
-		editorContext.registerWindow(ServerInfoWindow(networkingManager), false)
+		editorContext.registerWindow(ServerInfoWindow(), false)
 		editorContext.registerWindow(ControllerTestWindow(), false)
+		editorContext.registerWindow(BuildDistributionWindow(), false)
+		editorContext.registerWindow(BuildDistributionWindow.SuccessWindow(), false)
 
-		initScene()
+		loadScene()
 		editorContext.init()
 	}
 
-	fun saveScene() = sceneManager.saveSceneToFile(SCENE_FILEPATH)
-	fun reloadScene() = initScene()
+	fun saveScene() = SceneManager.saveSceneToFile(SCENE_FILEPATH)
 
-	private fun initScene() {
-		sceneManager.loadSceneFromFile(SCENE_FILEPATH)
-		sceneManager.init()
+	fun loadScene() {
+		SceneManager.loadSceneFromFile(SCENE_FILEPATH)
+		initScene()
+	}
+
+	fun initScene() {
+		SceneManager.init()
 	}
 
 	override fun onDetach() {
-		networkingManager.cleanup()
-
-		sceneManager.saveSceneToFile(SCENE_FILEPATH)
+		gameRuntime.stop()
+		NetworkingManager.cleanup()
+		SceneManager.saveSceneToFile(SCENE_FILEPATH)
 		editorContext.saveConfig()
 	}
 
 	override fun onUpdate(deltaTime: Float) {
-		if (runtimeState == RuntimeState.PLAYING)
-			sceneManager.update(deltaTime)
+		Engine.gameRuntime.update(deltaTime)
 
 		editorContext.update(deltaTime)
 	}
 
 	override fun onRender() {
+		Renderer.clear(ImGui.getStyleColorVec4(ImGuiCol.WindowBg).toJomlVec())
+
 		framebuffer.bind()
 
 		Renderer.clear(.1f, .2f, .3f, 1f)
 
 		Renderer.beginScene(camera)
-		sceneManager.render()
+		SceneManager.render()
 		Renderer.endScene()
 
 		framebuffer.unbind()
@@ -98,9 +92,12 @@ class EditorLayer : Layer {
 		ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode)
 
 		if (ImGui.beginMainMenuBar()) {
-			val connectedToServer = networkingManager.isConnected
+			val connectedToServer = NetworkingManager.isConnected
 
 			if (ImGui.beginMenu("File")) {
+				if (ImGui.menuItem("Build Distribution"))
+					editorContext.showCentered<BuildDistributionWindow>(ImVec2(300f, 200f))
+
 				if (ImGui.menuItem("Quit"))
 					Engine.quit()
 
@@ -139,7 +136,7 @@ class EditorLayer : Layer {
 
 				if (!connectedToServer) ImGui.beginDisabled()
 				if (ImGui.menuItem("Disconnect from Server"))
-					networkingManager.disconnect()
+					NetworkingManager.disconnect()
 				if (!connectedToServer) ImGui.endDisabled()
 
 				ImGui.endMenu()

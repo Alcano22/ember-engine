@@ -8,9 +8,7 @@ import imgui.type.ImString
 import org.emberstudios.engine.networking.NetworkingManager
 import org.emberstudios.engine.util.Color
 
-class ServerConnectWindow(
-	private val networkingManager: NetworkingManager
-) : EditorWindow(
+class ServerConnectWindow : EditorWindow(
 	"Connect to Server",
 	true,
 	ImGuiWindowFlags.NoResize or
@@ -66,7 +64,7 @@ class ServerConnectWindow(
 			val tcpPort = imTCPPort.get().toInt()
 			val udpPort = imUDPPort.get().toInt()
 			connectionState = ConnectionState.CONNECTING
-			networkingManager.connect(imHost.get(), tcpPort, udpPort) {
+			NetworkingManager.connect(imHost.get(), tcpPort, udpPort) {
 				connectionState = if (it) ConnectionState.CONNECTED else ConnectionState.FAILED
 			}
 		}

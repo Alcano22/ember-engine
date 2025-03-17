@@ -7,13 +7,14 @@ import imgui.flag.ImGuiWindowFlags
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.engine.Engine
 import org.emberstudios.engine.layer.EditorLayer
-import org.emberstudios.engine.layer.EditorLayer.RuntimeState
+import org.emberstudios.engine.runtime.GameRuntime
 import org.emberstudios.engine.util.Time
 import org.emberstudios.input.Input
 import org.emberstudios.renderer.Camera
 import org.emberstudios.renderer.Framebuffer
 import org.emberstudios.renderer.Renderer
 import org.joml.Vector2f
+import kotlin.math.max
 import kotlin.math.round
 
 class ViewportWindow(
@@ -30,9 +31,7 @@ class ViewportWindow(
 		val LOGGER = getLogger<ViewportWindow>()
 	}
 
-	private var runtimeState
-		get() = editorLayer.runtimeState
-		set(value) { editorLayer.runtimeState = value }
+	private val gameRuntime get() = Engine.gameRuntime
 
 	private var showStats = false
 	private var fps = 0
@@ -46,31 +45,19 @@ class ViewportWindow(
 	}
 
 	override fun renderMenuBar() {
-		val label = when (runtimeState) {
-			RuntimeState.EDITOR -> "Start"
-			RuntimeState.PLAYING -> "Stop"
-			RuntimeState.PAUSED -> "Stop"
+		val label = when (gameRuntime.state) {
+			GameRuntime.State.STOPPED -> "Start"
+			GameRuntime.State.PLAYING -> "Stop"
+			GameRuntime.State.PAUSED -> "Stop"
 		}
 
 		ImGui.setCursorPosX(ImGui.getCursorPosX() + MENU_BAR_PADDING)
 
-		if (ImGui.menuItem(label, runtimeState == RuntimeState.PLAYING || runtimeState == RuntimeState.PAUSED)) {
-			runtimeState = when (runtimeState) {
-				RuntimeState.EDITOR -> RuntimeState.PLAYING
-				RuntimeState.PLAYING -> RuntimeState.EDITOR
-				RuntimeState.PAUSED -> RuntimeState.EDITOR
-			}
+		if (ImGui.menuItem(label, gameRuntime.isPlayingOrPaused))
+			gameRuntime.togglePlay()
 
-			if (runtimeState == RuntimeState.EDITOR) editorLayer.reloadScene()
-			if (runtimeState == RuntimeState.PLAYING) editorLayer.saveScene()
-		}
-
-		if (ImGui.menuItem("Pause", runtimeState == RuntimeState.PAUSED, runtimeState != RuntimeState.EDITOR)) {
-			if (runtimeState == RuntimeState.PLAYING)
-				runtimeState = RuntimeState.PAUSED
-			else if (runtimeState == RuntimeState.PAUSED)
-				runtimeState = RuntimeState.PLAYING
-		}
+		if (ImGui.menuItem("Pause", gameRuntime.isPaused, gameRuntime.isPlayingOrPaused))
+			gameRuntime.togglePause()
 
 		val statsLabel = "Stats"
 		val statsWidth = ImGui.calcTextSizeX(statsLabel) + ImGui.getStyle().itemSpacingX * 2f
@@ -144,30 +131,29 @@ class ViewportWindow(
 	}
 
 	private fun getViewportLargestSize(): ImVec2 {
-		val windowSize = ImGui.getContentRegionAvail()
-		windowSize.x -= ImGui.getScrollX()
-		windowSize.y -= ImGui.getScrollY()
-
+		val contentAvail = ImGui.getContentRegionAvail()
+		val scrollX = ImGui.getScrollX()
+		val scrollY = ImGui.getScrollY()
+		val availX = max(contentAvail.x - scrollX, 1f)
+		val availY = max(contentAvail.y - scrollY, 1f)
 		val aspectRatio = 16f / 9f
-
-		var aspectWidth = windowSize.x
+		var aspectWidth = availX
 		var aspectHeight = aspectWidth / aspectRatio
-		if (aspectHeight > windowSize.y) {
-			aspectHeight = windowSize.y
+		if (aspectHeight > availY) {
+			aspectHeight = availY
 			aspectWidth = aspectHeight * aspectRatio
 		}
-
 		return ImVec2(aspectWidth, aspectHeight)
 	}
 
 	private fun getViewportCenteredPosition(aspectSize: ImVec2): ImVec2 {
-		val windowSize = ImGui.getContentRegionAvail()
-		windowSize.x -= ImGui.getScrollX()
-		windowSize.y -= ImGui.getScrollY()
-
-		val viewportX = (windowSize.x - aspectSize.x) / 2f
-		val viewportY = (windowSize.y - aspectSize.y) / 2f
-
+		val contentAvail = ImGui.getContentRegionAvail()
+		val scrollX = ImGui.getScrollX()
+		val scrollY = ImGui.getScrollY()
+		val availX = max(contentAvail.x - scrollX, 1f)
+		val availY = max(contentAvail.y - scrollY, 1f)
+		val viewportX = (availX - aspectSize.x) / 2f
+		val viewportY = (availY - aspectSize.y) / 2f
 		return ImVec2(viewportX + ImGui.getCursorPosX(), viewportY + ImGui.getCursorPosY())
 	}
 }

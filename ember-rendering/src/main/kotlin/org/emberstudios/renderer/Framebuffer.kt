@@ -5,8 +5,14 @@ import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.renderer.GraphicsAPIType
 import org.emberstudios.renderer.opengl.GLFramebuffer
 
+/**
+ * A framebuffer is a container for textures that can be rendered to.
+ */
 abstract class Framebuffer(protected val specs: Specs) {
 
+	/**
+	 * The specifications of the framebuffer.
+	 */
 	data class Specs(
 		var width: Int,
 		var height: Int,
@@ -17,6 +23,13 @@ abstract class Framebuffer(protected val specs: Specs) {
 	companion object {
 		private val LOGGER = KotlinLogging.logger("FramebufferFactory")
 
+		/**
+		 * Creates a new framebuffer.
+		 *
+		 * @param specs The specifications of the framebuffer.
+		 *
+		 * @return The created framebuffer.
+		 */
 		fun create(specs: Specs): Framebuffer = when (Renderer.apiType) {
 			GraphicsAPIType.OPEN_GL -> GLFramebuffer(specs)
 			GraphicsAPIType.VULKAN -> LOGGER.exitError { "Vulkan is not supported!" }

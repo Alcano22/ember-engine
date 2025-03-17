@@ -2,6 +2,9 @@ package org.emberstudios.input
 
 import org.emberstudios.core.util.toDisplayStyle
 
+/**
+ * Represents a key on the keyboard.
+ */
 enum class Key(val code: Int) {
 	SPACE(32),
 	APOSTROPHE(39),

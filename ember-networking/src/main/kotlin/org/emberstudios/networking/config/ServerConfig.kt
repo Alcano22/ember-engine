@@ -8,12 +8,12 @@ import java.io.File
 
 typealias YamlProperty = JsonProperty
 
-class ServerConfig(
+internal class ServerConfig(
 	@YamlProperty("tcp_port") val tcpPort: Int = 9115,
 	@YamlProperty("udp_port") val udpPort: Int = 9125
 )
 
-fun loadConfig(): ServerConfig {
+internal fun loadConfig(): ServerConfig {
 	val logger = getLogger<ServerConfig>()
 
 	val configFile = File("config.yml")

@@ -1,5 +1,11 @@
 package org.emberstudios.renderer
 
+/**
+ * Represents the data type of shader attribute.
+ *
+ * @param componentCount The number of components in the data type.
+ * @param singleSize The size of a single component in bytes.
+ */
 enum class ShaderDataType(val componentCount: Int, private val singleSize: Int) {
 
 	BOOL(1, 1),
@@ -14,6 +20,9 @@ enum class ShaderDataType(val componentCount: Int, private val singleSize: Int) 
 	MAT3(3 * 3, Float.SIZE_BYTES),
 	MAT4(4 * 4, Float.SIZE_BYTES);
 
+	/**
+	 * The size of the data type in bytes.
+	 */
 	val size = componentCount * singleSize
 
 }

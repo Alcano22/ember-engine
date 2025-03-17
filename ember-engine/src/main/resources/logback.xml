@@ -1,4 +1,6 @@
 <configuration>
+    <property name="LOG_LEVEL" value="${LOG_LEVEL:-info}" />
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
@@ -47,7 +49,7 @@
         </encoder>
     </appender>
 
-    <root level="trace">
+    <root level="${LOG_LEVEL}">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ERROR_CONSOLE" />
         <appender-ref ref="EDITOR_CONSOLE" />

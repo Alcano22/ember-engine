@@ -10,6 +10,13 @@ interface IndexBuffer {
 	companion object {
 		private val FACTORY_LOGGER = KotlinLogging.logger("IndexBufferFactory")
 
+		/**
+		 * Create an index buffer.
+		 *
+		 * @param indices The indices to store in the buffer.
+		 *
+		 * @return The created index buffer.
+		 */
 		fun create(indices: IntArray): IndexBuffer = when (Renderer.apiType) {
 			GraphicsAPIType.OPEN_GL -> GLIndexBuffer(indices)
 			GraphicsAPIType.VULKAN -> FACTORY_LOGGER.exitError { "Vulkan is not supported!" }

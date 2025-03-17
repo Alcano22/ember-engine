@@ -47,7 +47,11 @@ object EventBus {
     }
 
     fun initializeAsync() {
-        createThread("EventBusClassLookup", start = true) { initialize() }
+        createThread(
+            "EventBusClassLookup",
+            start = true,
+            action = ::initialize
+        )
     }
 
     private fun register(listener: EventListener) {

@@ -45,10 +45,14 @@ class TextEditorWindow : EditorWindow(
     }
 
     private fun preloadPythonInterpreter() {
-        createThread("PythonInterpreterLauncher", start = true) {
-            PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
-            python = PythonInterpreter()
-        }
+        createThread(
+            "PythonInterpreterLauncher",
+            start = true,
+            action = {
+                PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+                python = PythonInterpreter()
+            }
+        )
     }
 
     override fun renderContent() {

@@ -4,11 +4,9 @@ import kotlinx.coroutines.*
 import org.emberstudios.core.logger.getLogger
 import org.emberstudios.networking.GameClient
 
-class NetworkingManager {
+object NetworkingManager {
 
-	companion object {
-		val LOGGER = getLogger<NetworkingManager>()
-	}
+	private val LOGGER = getLogger<NetworkingManager>()
 
 	private var client: GameClient? = null
 	private val networkingScope = CoroutineScope(Dispatchers.IO + SupervisorJob())

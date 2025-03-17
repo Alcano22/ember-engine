@@ -7,14 +7,30 @@ import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
+/**
+ * Manages resources such as text files, binary files, and fonts.
+ */
 object ResourceManager {
 
     private val LOGGER = getLogger<ResourceManager>()
 
     private val cache = mutableMapOf<String, Resource>()
 
+    /**
+     * Clears the cache for the specified file.
+     *
+     * @param filepath The path to the file.
+     */
     fun clearCache(filepath: String) { cache.remove(filepath) }
 
+    /**
+     * Loads a resource from the specified file path.
+     *
+     * @param filepath The path to the file.
+     * @param loader The loader function that creates the resource.
+     *
+     * @return A pair containing the resource and a boolean indicating whether the resource was cached.
+     */
     fun <T : Resource> load(filepath: String, loader: (String) -> T): Pair<T, Boolean> {
         val cached = cache.containsKey(filepath)
         val resource: T
@@ -26,6 +42,14 @@ object ResourceManager {
         return Pair(resource, cached)
     }
 
+    /**
+     * Loads a text file from the specified file path.
+     *
+     * @param filepath The path to the file.
+     * @param charset The character set to use when reading the file.
+     *
+     * @return The content of the text file.
+     */
     fun loadTextFile(filepath: String, charset: Charset = Charsets.UTF_8): String {
         return load(filepath) {
             val content = loadRawText(it, charset)
@@ -35,6 +59,13 @@ object ResourceManager {
         }.first.text
     }
 
+    /**
+     * Loads a binary file from the specified file path.
+     *
+     * @param filepath The path to the file.
+     *
+     * @return The content of the binary file.
+     */
     fun loadBinaryFile(filepath: String): ByteArray {
         return load(filepath) {
             val data = loadRawBinary(it)
@@ -44,6 +75,13 @@ object ResourceManager {
         }.first.data
     }
 
+    /**
+     * Loads a font from the specified file path.
+     *
+     * @param filepath The path to the file.
+     *
+     * @return The content of the font file.
+     */
     fun loadFont(filepath: String) = ByteBuffer.wrap(loadBinaryFile(filepath))
 
     private fun loadRawText(filepath: String, charset: Charset): String {
@@ -66,10 +104,25 @@ object ResourceManager {
                 ?: LOGGER.exitError { "Resource not found: $filepath" }
     }
 
+    /**
+     * Checks if a file exists.
+     *
+     * @param filepath The path to the file.
+     *
+     * @return True if the file exists, false otherwise.
+     */
     fun exists(filepath: String) =
         File(filepath).exists() ||
         javaClass.classLoader.getResource(filepath) != null
 
+    /**
+     * Checks if a file is a text file.
+     *
+     * @param file The file to check.
+     * @param sampleSize The number of bytes to sample from the file.
+     *
+     * @return True if the file is a text file, false otherwise.
+     */
     fun isTextFile(file: File, sampleSize: Int = 512): Boolean {
         val bytes = file.readBytes().take(sampleSize)
         return bytes.all {
@@ -77,6 +130,9 @@ object ResourceManager {
         }
     }
 
+    /**
+     * Cleans up the resources.
+     */
     fun cleanup() {
         cache.values.forEach {
             it.delete()
@@ -85,19 +141,46 @@ object ResourceManager {
         cache.clear()
     }
 
+    /**
+     * Gets the input stream for the specified file path.
+     *
+     * @param filepath The path to the file.
+     *
+     * @return The input stream for the file.
+     */
     fun getResourceStream(filepath: String): InputStream? =
         javaClass.classLoader.getResourceAsStream(filepath)
 
 }
 
+/**
+ * Represents a resource.
+ */
 interface Resource {
+    /**
+     * Deletes the resource.
+     */
     fun delete()
 }
 
+/**
+ * Represents a text resource.
+ *
+ * @param text The text content.
+ */
 class TextResource(val text: String) : Resource {
+    /**
+     * Deletes the resource.
+     */
     override fun delete() {}
 }
 
+/**
+ * Represents a binary resource.
+ */
 class BinaryResource(val data: ByteArray) : Resource {
+    /**
+     * Deletes the resource.
+     */
     override fun delete() {}
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+    <dontWrapJar>false</dontWrapJar>
+    <headerType>gui</headerType>
+    <jar>../build/libs/ember-engine-all.jar</jar>
+    <outfile>../dist/%DIST_NAME%.exe</outfile>
+    <errTitle></errTitle>
+    <cmdLine>-Xms%MIN_MEM%M -Xmx%MAX_MEM%M -DLOG_LEVEL=OFF</cmdLine>
+    <chdir>.</chdir>
+    <priority>normal</priority>
+    <downloadUrl></downloadUrl>
+    <supportUrl></supportUrl>
+    <stayAlive>false</stayAlive>
+    <manifest></manifest>
+    <icon>%ICON_PATH%</icon>
+    <jre>
+        <path>../dist/jre</path>
+        <bundledJre64Bit>true</bundledJre64Bit>
+        <minVersion>1.8.0</minVersion>
+        <maxVersion></maxVersion>
+        <jdkPreference>preferJre</jdkPreference>
+        <runtimeBits>64</runtimeBits>
+    </jre>
+</launch4jConfig>

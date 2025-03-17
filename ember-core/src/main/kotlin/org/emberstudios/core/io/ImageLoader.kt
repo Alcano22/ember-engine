@@ -10,10 +10,16 @@ import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * Utility class for loading images.
+ */
 object ImageLoader {
 
     private val LOGGER = getLogger<ImageLoader>()
 
+    /**
+     * Data class representing image data.
+     */
     data class ImageData(
         val width: Int,
         val height: Int,
@@ -21,6 +27,11 @@ object ImageLoader {
         val data: ByteBuffer
     )
 
+    /**
+     * Load an image from a file.
+     *
+     * @param filepath The path to the image file.
+     */
     fun load(filepath: String): ImageData {
         val buffer: ByteBuffer
 
@@ -55,8 +66,17 @@ object ImageLoader {
         }
     }
 
+    /**
+     * Free the memory allocated for the image data.
+     */
     fun free(data: ByteBuffer) = stbi_image_free(data)
 
+    /**
+     * Check if an image is transparent.
+     *
+     * @param image The image data.
+     * @return True if the image is transparent, false otherwise.
+     */
     fun isTransparent(image: ImageData) = image.channels == 4
 
 }

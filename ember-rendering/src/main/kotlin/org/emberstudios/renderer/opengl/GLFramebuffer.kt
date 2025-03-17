@@ -60,8 +60,12 @@ internal class GLFramebuffer(specs: Specs) : Framebuffer(specs) {
 	}
 
 	override fun resize(width: Int, height: Int) {
+		if (width <= 0 || height <= 0)
+			LOGGER.exitError { "Attempted to resize framebuffer with invalid dimensions: ${width}x$height" }
+
 		specs.width = width
 		specs.height = height
+		LOGGER.trace { "Resizing framebuffer to: ${width}x$height" }
 		invalidate()
 	}
 

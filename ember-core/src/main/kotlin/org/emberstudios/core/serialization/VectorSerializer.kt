@@ -8,6 +8,9 @@ import org.emberstudios.core.logger.exitError
 import org.emberstudios.core.logger.getLogger
 import org.joml.*
 
+/**
+ * Serializer for [Vector2i].
+ */
 object Vector2iSerializer : KSerializer<Vector2i> {
     private val LOGGER = getLogger<Vector2iSerializer>()
 

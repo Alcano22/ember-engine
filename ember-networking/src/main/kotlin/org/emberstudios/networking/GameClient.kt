@@ -12,6 +12,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.emberstudios.core.logger.getLogger
 
+/**
+ * A client that connects to a server using TCP and UDP.
+ *
+ * @param hostAddress The IP address of the server.
+ * @param tcpPort The TCP port of the server.
+ * @param udpPort The UDP port of the server.
+ */
 class GameClient(
 	val hostAddress: String = "127.0.0.1",
 	val tcpPort: Int = 9115,
@@ -22,6 +29,9 @@ class GameClient(
 		val LOGGER = getLogger<GameClient>()
 	}
 
+	/**
+	 * Whether to trace messages sent and received from the server.
+	 */
 	var traceMessages = false
 
 	private val selectorManager = SelectorManager(Dispatchers.IO)
@@ -32,13 +42,25 @@ class GameClient(
 	private var udpSocket: BoundDatagramSocket? = null
 
 	private var connectTime = 0L
+
+	/**
+	 * The duration of the connection in seconds.
+	 */
 	val connectionDuration get() = (System.currentTimeMillis() - connectTime).toFloat() / 1000f
 
+	/**
+	 * Whether the client is connected to the server.
+	 */
 	var isConnected = false
 		private set
 
 	private var pendingPing: CompletableDeferred<Long>? = null
 
+	/**
+	 * Connects to the server using TCP and UDP.
+	 *
+	 * @param onConnected A callback that is called when the client is connected.
+	 */
 	suspend fun connect(onConnected: suspend (Boolean) -> Unit = {}) = withContext(Dispatchers.IO) {
 		try {
 			tcpSocket = aSocket(selectorManager).tcp().connect(hostAddress, tcpPort)
@@ -97,6 +119,9 @@ class GameClient(
 		}
 	}
 
+	/**
+	 * Disconnects from the server.
+	 */
 	suspend fun disconnect() = withContext(Dispatchers.IO) {
 		tcpWriteChannel?.writeStringUtf8("DISCONNECT\n")
 		tcpSocket?.close()
@@ -105,6 +130,11 @@ class GameClient(
 		isConnected = false
 	}
 
+	/**
+	 * Sends a message to the server.
+	 *
+	 * @param message The message to send.
+	 */
 	suspend fun sendMessage(message: String) = withContext(Dispatchers.IO) {
 		try {
 			tcpWriteChannel?.writeStringUtf8("$message\n")
@@ -114,6 +144,11 @@ class GameClient(
 		}
 	}
 
+	/**
+	 * Sends a transform to the server.
+	 *
+	 * @param netTransform The transform to send.
+	 */
 	suspend fun sendTransform(netTransform: NetTransform) = withContext(Dispatchers.IO) {
 		val jsonString = Json.encodeToString(netTransform)
 		val packet = buildPacket { writeFully(jsonString.encodeToByteArray()) }
@@ -121,6 +156,11 @@ class GameClient(
 		LOGGER.trace { "Sent transform: $jsonString" }
 	}
 
+	/**
+	 * Measures the latency to the server.
+	 *
+	 * @return The latency in milliseconds.
+	 */
 	suspend fun measureLatency(): Long = withContext(Dispatchers.IO) {
 		val deferred = CompletableDeferred<Long>()
 		pendingPing = deferred
@@ -129,6 +169,11 @@ class GameClient(
 		deferred.await()
 	}
 
+	/**
+	 * Traces a message if [traceMessages] is enabled.
+	 *
+	 * @param message The message to trace.
+	 */
 	private fun traceMessage(message: String) {
 		if (traceMessages)
 			LOGGER.trace { message }

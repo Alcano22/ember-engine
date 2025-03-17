@@ -7,6 +7,9 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.emberstudios.core.utils.GID
 
+/**
+ * A serializer for [GID].
+ */
 object GIDSerializer : KSerializer<GID> {
     override val descriptor = PrimitiveSerialDescriptor("GID", PrimitiveKind.STRING)
 
